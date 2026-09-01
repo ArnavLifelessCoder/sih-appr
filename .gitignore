@@ -1,0 +1,13 @@
+# raw + derived data (1.5 GB extracted, 370 MB parquet) -- never commit
+data/
+cache/
+work/
+kaggle/work/
+*.parquet
+*.zip
+*.log
+
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.DS_Store

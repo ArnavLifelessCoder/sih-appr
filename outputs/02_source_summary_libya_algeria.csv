@@ -1,0 +1,3 @@
+country,detections,sources,det_per_source,src_1det,src_1det_pct,src_ge5days,src_ge30days,src_multiyear,eog_sites,sources_matched,eog_recovered,eog_recall_pct,pos_rate_pct
+Libya,427517,4824,88.6,2444,50.7,849,407,1134,202,622,175,86.6,12.894
+Algeria,744252,19122,38.9,7912,41.4,1998,643,3671,438,1256,397,90.6,6.568
