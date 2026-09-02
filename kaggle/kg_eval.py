@@ -36,8 +36,9 @@ def calibration_table(y, p, bins=10):
     t["gap"] = (t.pred - t.obs).abs()
     return t
 
-def load_features(countries):
-    fs = [pd.read_parquet(CACHE / f"features_{c}.parquet") for c in countries]
+def load_features(countries, tag=None):
+    suffix = f"_{tag}" if tag else ""
+    fs = [pd.read_parquet(CACHE / f"features_{c}{suffix}.parquet") for c in countries]
     return pd.concat(fs, ignore_index=True)
 
 def grouped_folds(df, n_splits=5, seed=0):

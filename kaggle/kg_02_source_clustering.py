@@ -31,6 +31,60 @@ def grid_ids(x, y, cell):
     iy = np.floor(y / cell).astype("int64")
     return ix, iy, (ix + 2_000_000) * 4_000_000 + (iy + 2_000_000)
 
+def attach_eog_labels(src, country, lat0, lon0, grid_m=GRID_M,
+                      label_r=LABEL_R_M, active_years=range(2019, 2025)):
+    """Attach nearest-site EOG labels to a source table.
+
+    ``src`` must contain ``x`` and ``y`` coordinates in the local projection
+    defined by ``lat0`` and ``lon0``. Restricting ``active_years`` is essential
+    for common-window experiments: a flare active outside the observation
+    window must not become a positive label inside it.
+    """
+    src = src.copy()
+    e = eog_sites(active_years=active_years)
+    e = e[e.country == country].reset_index(drop=True)
+    if not len(e):
+        src["eog_dist_m"] = np.inf
+        src["is_eog_flare"] = np.int8(0)
+        src["eog_flare_id"] = None
+        src["eog_offshore"] = False
+        return src
+
+    ex, ey = to_local_m(e.lat.values, e.lon.values, lat0, lon0)
+    eix, eiy, _ = grid_ids(ex, ey, grid_m)
+    buckets = {}
+    for j, (a, b) in enumerate(zip(eix, eiy)):
+        buckets.setdefault((a, b), []).append(j)
+
+    six = np.floor(src.x.values / grid_m).astype("int64")
+    siy = np.floor(src.y.values / grid_m).astype("int64")
+    best_d = np.full(len(src), np.inf)
+    best_j = np.full(len(src), -1)
+    rad = int(np.ceil(label_r / grid_m))
+    for dx in range(-rad, rad + 1):
+        for dy in range(-rad, rad + 1):
+            cand = {}
+            for i, (a, b) in enumerate(zip(six + dx, siy + dy)):
+                js = buckets.get((a, b))
+                if js:
+                    cand[i] = js
+            for i, js in cand.items():
+                d = np.hypot(ex[js] - src.x.values[i], ey[js] - src.y.values[i])
+                k = int(np.argmin(d))
+                if d[k] < best_d[i]:
+                    best_d[i] = d[k]
+                    best_j[i] = js[k]
+
+    src["eog_dist_m"] = best_d
+    src["is_eog_flare"] = (best_d <= label_r).astype("int8")
+    safe_j = np.clip(best_j, 0, None)
+    src["eog_flare_id"] = np.where(
+        best_j >= 0, e.flare_id.values[safe_j], None)
+    src["eog_offshore"] = np.where(
+        best_j >= 0, e.location.values[safe_j] == "OFFSHORE", False)
+    src.loc[src.is_eog_flare == 0, "eog_flare_id"] = None
+    return src
+
 def build_country(country, grid_m=GRID_M, label_r=LABEL_R_M, verbose=True):
     t0 = time.time()
     df = load_firms(countries=[country])
@@ -70,39 +124,7 @@ def build_country(country, grid_m=GRID_M, label_r=LABEL_R_M, verbose=True):
     src = src.reset_index(drop=True)
 
     # ---- EOG labels: match each source to the nearest active flare site ----
-    e = eog_sites()
-    e = e[e.country == country]
-    if len(e):
-        ex, ey = to_local_m(e.lat.values, e.lon.values, lat0, lon0)
-        # bucket EOG sites into the same grid, then search a 3x3 cell neighbourhood
-        eix, eiy, _ = grid_ids(ex, ey, grid_m)
-        buckets = {}
-        for j, (a, b) in enumerate(zip(eix, eiy)):
-            buckets.setdefault((a, b), []).append(j)
-        six = np.floor(src.x.values / grid_m).astype("int64")
-        siy = np.floor(src.y.values / grid_m).astype("int64")
-        best_d = np.full(len(src), np.inf); best_j = np.full(len(src), -1)
-        rad = int(np.ceil(label_r / grid_m))
-        for dx in range(-rad, rad + 1):
-            for dy in range(-rad, rad + 1):
-                cand = {}
-                for i, (a, b) in enumerate(zip(six + dx, siy + dy)):
-                    js = buckets.get((a, b))
-                    if js: cand[i] = js
-                for i, js in cand.items():
-                    d = np.hypot(ex[js] - src.x.values[i], ey[js] - src.y.values[i])
-                    k = int(np.argmin(d))
-                    if d[k] < best_d[i]:
-                        best_d[i] = d[k]; best_j[i] = js[k]
-        src["eog_dist_m"] = best_d
-        src["is_eog_flare"] = (best_d <= label_r).astype("int8")
-        src["eog_flare_id"] = np.where(best_j >= 0, e.flare_id.values[np.clip(best_j, 0, None)], None)
-        src["eog_offshore"] = np.where(
-            best_j >= 0, e.location.values[np.clip(best_j, 0, None)] == "OFFSHORE", False)
-        src.loc[src.is_eog_flare == 0, ["eog_flare_id"]] = None
-    else:
-        src["eog_dist_m"] = np.inf; src["is_eog_flare"] = np.int8(0)
-        src["eog_flare_id"] = None; src["eog_offshore"] = False
+    src = attach_eog_labels(src, country, lat0, lon0, grid_m, label_r)
 
     det = df[["source_idx", "latitude", "longitude", "t_mir", "t_lwir", "frp", "scan",
               "track", "acq_dt", "acq_time", "satellite", "confidence", "daynight",

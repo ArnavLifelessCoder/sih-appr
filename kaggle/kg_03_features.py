@@ -14,6 +14,7 @@ Writes cache/features_<country>.parquet
 import sys, time
 import numpy as np, pandas as pd
 from kg_common import *
+from kg_02_source_clustering import attach_eog_labels, to_local_m
 
 MODEL_SENSORS = ["MODIS", "VIIRS_SNPP"]      # uniform across all 7 countries
 FEATURE_BLOCKLIST = {"lat", "lon", "x", "y", "country", "type", "eog_dist_m",
@@ -29,12 +30,24 @@ def _circ(hours):
     std = np.sqrt(max(-2 * np.log(max(R, 1e-12)), 0)) * 24 / (2 * np.pi)
     return mean, std
 
-def build(country, sensors=MODEL_SENSORS):
+def build(country, sensors=MODEL_SENSORS, years=None, output_tag=None):
+    """Build source features, optionally inside a fixed observation window.
+
+    When ``years`` is provided, detections and EOG activity are restricted to
+    exactly those years. Window-normalized persistence features are added and
+    the output is written as ``features_<country>_<output_tag>.parquet``.
+    """
     t0 = time.time()
     det = pd.read_parquet(CACHE / f"detections_{country}.parquet")
     det = det[det.sensor.isin(sensors)].copy()
+    if years is not None:
+        years = tuple(sorted(set(int(y) for y in years)))
+        if not years:
+            raise ValueError("years cannot be empty")
+        det = det[det.year.isin(years)].copy()
     if det.empty:
-        raise ValueError(f"no detections for {country} with sensors={sensors}")
+        raise ValueError(
+            f"no detections for {country} with sensors={sensors}, years={years}")
 
     det["day"]      = det.acq_dt.values.astype("datetime64[D]")
     det["doy"]      = det.acq_dt.dt.dayofyear
@@ -118,15 +131,52 @@ def build(country, sensors=MODEL_SENSORS):
     f["n_pixels"] = det.groupby("source_id", observed=True).apply(
         lambda d: len(d[["latitude", "longitude"]].drop_duplicates()), include_groups=False)
 
+    if years is not None:
+        # Exposure-normalized alternatives to raw counts. The robust model
+        # blocklists the raw versions and consumes these columns instead.
+        n_window_years = float(len(years))
+        window_start = pd.Timestamp(min(years), 1, 1)
+        window_end = pd.Timestamp(max(years), 12, 31)
+        window_days = float((window_end - window_start).days + 1)
+        f["det_per_year"] = f.n_det / n_window_years
+        f["active_days_per_year"] = f.n_days / n_window_years
+        f["active_months_per_year"] = f.n_months / n_window_years
+        f["frp_sum_per_year"] = f.frp_sum / n_window_years
+        f["modis_per_year"] = f.n_modis / n_window_years
+        f["snpp_per_year"] = f.n_snpp / n_window_years
+        f["span_window_frac"] = f.span_days / max(window_days - 1.0, 1.0)
+
     f = f.replace([np.inf, -np.inf], np.nan).astype("float32").reset_index()
 
     src = pd.read_parquet(CACHE / f"sources_{country}.parquet")
-    out = f.merge(src[["source_id", "block_id", "country", "lat", "lon",
-                       "is_eog_flare", "eog_flare_id", "eog_dist_m", "eog_offshore"]],
-                  on="source_id", how="left")
-    out.to_parquet(CACHE / f"features_{country}.parquet", index=False)
+    if years is None:
+        out = f.merge(src[["source_id", "block_id", "country", "lat", "lon",
+                           "is_eog_flare", "eog_flare_id", "eog_dist_m", "eog_offshore"]],
+                      on="source_id", how="left")
+    else:
+        # Recompute source centroids and EOG labels inside the common window.
+        # Reuse the original 10 km block_id so the spatial grouping remains
+        # anchored to the Stage 02 grid.
+        geo = (det.groupby("source_id", observed=True)
+                 .agg(lat=("latitude", "mean"), lon=("longitude", "mean"))
+                 .reset_index())
+        geo = geo.merge(src[["source_id", "block_id"]], on="source_id", how="left")
+        geo["country"] = country
+        lat0, lon0 = float(det.latitude.mean()), float(det.longitude.mean())
+        geo["x"], geo["y"] = to_local_m(
+            geo.lat.values, geo.lon.values, lat0, lon0)
+        geo = attach_eog_labels(
+            geo, country, lat0, lon0, active_years=years)
+        out = f.merge(
+            geo[["source_id", "block_id", "country", "lat", "lon",
+                 "is_eog_flare", "eog_flare_id", "eog_dist_m", "eog_offshore"]],
+            on="source_id", how="left")
+
+    suffix = f"_{output_tag}" if output_tag else ""
+    out.to_parquet(CACHE / f"features_{country}{suffix}.parquet", index=False)
     print(f"{country}: {len(out):,} sources x {len(feature_cols(out))} features "
-          f"({int(out.is_eog_flare.sum()):,} pos)  [{time.time()-t0:.0f}s]", flush=True)
+          f"({int(out.is_eog_flare.sum()):,} pos), years={years or 'all'} "
+          f"[{time.time()-t0:.0f}s]", flush=True)
     return out
 
 def feature_cols(df):

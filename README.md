@@ -1,4 +1,4 @@
-# SIH26162 — Persistent industrial thermal source detection
+# SIH26162: Persistent industrial thermal source detection
 
 Separating industrial thermal sources (gas flares, kilns, furnaces) from natural and
 agricultural fires, using NASA FIRMS active-fire detections plus contextual geospatial data.
@@ -22,11 +22,11 @@ dates, zero exact duplicate rows. 754 rows (0.004%) have `frp <= 0`.
 | Country | MODIS | VIIRS_N20 | VIIRS_SNPP | Total | Years |
 |---|---|---|---|---|---|
 | India | 496,769 | 3,574,545 | 3,522,955 | 7,594,269 | 2019–24 |
-| Angola | 1,039,703 | — | 3,830,013 | 4,869,716 | 2022–24 |
+| Angola | 1,039,703 | N/A | 3,830,013 | 4,869,716 | 2022–24 |
 | Nigeria | 278,411 | 1,818,841 | 1,817,312 | 3,914,564 | 2021–24 |
 | Iraq | 142,218 | 562,857 | 584,908 | 1,289,983 | 2021–24 |
 | Algeria | 23,476 | 359,698 | 361,078 | 744,252 | 2021–24 |
-| Indonesia | 86,977 | — | 414,794 | 501,771 | 2022–24 |
+| Indonesia | 86,977 | N/A | 414,794 | 501,771 | 2022–24 |
 | Libya | 20,952 | 201,137 | 205,428 | 427,517 | 2021–24 |
 
 EOG active flare sites, 2019–2024: Algeria 438, Nigeria 436, Iraq 266, Libya 202
@@ -56,7 +56,7 @@ otherwise straddle a train/validation boundary and inflate scores.
 
 **This is positive-unlabelled learning, not binary classification.** EOG covers gas flares
 (>~1100 C) only. A brick kiln, cement plant or steel furnace is industrial but absent from
-EOG, so an unmatched source is unlabelled — not negative.
+EOG, so an unmatched source is unlabelled, not negative.
 
 ## Known constraints
 
@@ -85,11 +85,18 @@ Fixed by the data explainer; India is never used for fitting or model selection.
 ```
 kaggle/kg_common.py               config, loaders, EOG label join
 kaggle/kg_02_source_clustering.py detections -> sources, labels, CV blocks
+kaggle/kg_03_features.py          FIRMS-only source feature construction
+kaggle/kg_05_lightgbm.py          original full LightGBM and ablations
+kaggle/kg_05b_robust_tabular.py   common-window, PU and corrected LOCO run
+kaggle/kg_eval.py                 shared metrics, thresholds and split builders
 src/common.py                     local-run equivalents
 src/01_data_audit.py              streams 78 CSVs -> single parquet + audit table
 src/01b_audit_report.py           audit summary
 outputs/                          audit tables and source summaries
 ```
+
+The next Kaggle experiment is documented in `KAGGLE_05B.md`. It does not load
+or score India.
 
 ## FIRMS gotchas
 
