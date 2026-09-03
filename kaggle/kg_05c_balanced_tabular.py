@@ -89,15 +89,17 @@ def _train(X, y, train_idx, weights, rounds=N_ROUNDS, seed=31):
 def cv_predict(df, cols, variant, n_splits=5, rounds=N_ROUNDS, seed=31):
     X = df[cols].to_numpy(dtype="float32")
     y = df.is_eog_flare.to_numpy(dtype="int8")
-    weights = sample_weights(
-        df,
-        country_alpha=variant["country_alpha"],
-        fragment_balance=variant["fragment_balance"],
-    )
     oof = np.zeros(len(df), dtype="float64")
     train_s = infer_s = 0.0
     for fold, (train_idx, test_idx) in enumerate(grouped_folds(df, n_splits)):
         t0 = time.time()
+        # _train indexes this vector; validation entries are never used.
+        weights = np.ones(len(df), dtype="float32")
+        weights[train_idx] = sample_weights(
+            df.iloc[train_idx],
+            country_alpha=variant["country_alpha"],
+            fragment_balance=variant["fragment_balance"],
+        )
         model = _train(
             X, y, train_idx, weights, rounds=rounds,
             seed=seed + fold * 100,
@@ -227,7 +229,7 @@ def site_metrics(df, score, threshold, experiment, totals):
     return pd.DataFrame(rows)
 
 
-def evaluate_variants(df, cols, n_splits=5, rounds=N_ROUNDS):
+def evaluate_variants(df, cols, n_splits=5, rounds=N_ROUNDS, seed=31):
     y = df.is_eog_flare.to_numpy(dtype="int8")
     countries = df.country.to_numpy()
     totals = active_eog_counts(sorted(df.country.unique()))
@@ -239,10 +241,10 @@ def evaluate_variants(df, cols, n_splits=5, rounds=N_ROUNDS):
         "is_eog_flare", "eog_flare_id",
     ]].copy()
 
-    for index, variant in enumerate(VARIANTS):
+    for variant in VARIANTS:
         score, train_s, infer_s = cv_predict(
             df, cols, variant, n_splits=n_splits, rounds=rounds,
-            seed=31 + index * 1000,
+            seed=seed,
         )
         pooled_threshold, pooled_f1 = best_f1_threshold(y, score)
         threshold, macro_f1 = macro_f1_threshold(y, score, countries)

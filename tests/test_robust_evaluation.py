@@ -10,6 +10,55 @@ sys.path.insert(0, str(Path(__file__).parents[1] / "kaggle"))
 
 from kg_eval import best_f1_threshold
 from kg_05c_balanced_tabular import macro_f1_threshold, sample_weights
+import kg_05c_balanced_tabular as balanced
+
+
+def small_sources():
+    return pd.DataFrame({
+        "source_id": [f"s{i}" for i in range(8)],
+        "country": ["A"] * 4 + ["B"] * 4,
+        "block_id": [f"b{i}" for i in range(8)],
+        "lat": np.zeros(8), "lon": np.zeros(8),
+        "is_eog_flare": [1, 1, 0, 0, 1, 1, 0, 0],
+        "eog_flare_id": ["a", "a", None, None, "b", "c", None, None],
+        "feature": np.arange(8, dtype=float),
+    })
+
+
+def test_cv_weights_use_training_rows_only(monkeypatch):
+    df = small_sources()
+    splits = [(np.array([0, 2, 4, 6]), np.array([1, 3, 5, 7])),
+              (np.array([1, 3, 5, 7]), np.array([0, 2, 4, 6]))]
+    calls = []
+    original = balanced.sample_weights
+
+    def weights(part, **kwargs):
+        calls.append(part.source_id.tolist())
+        return original(part, **kwargs)
+
+    class Model:
+        def predict(self, x):
+            return np.full(len(x), .5)
+
+    monkeypatch.setattr(balanced, "grouped_folds", lambda *args: splits)
+    monkeypatch.setattr(balanced, "sample_weights", weights)
+    monkeypatch.setattr(balanced, "_train", lambda *args, **kwargs: Model())
+    balanced.cv_predict(df, ["feature"], balanced.VARIANTS[1], n_splits=2)
+    assert calls == [df.iloc[train].source_id.tolist() for train, _ in splits]
+
+
+def test_weighting_variants_use_matched_seeds(monkeypatch):
+    df = small_sources()
+    seeds = []
+
+    def predict(part, cols, variant, **kwargs):
+        seeds.append(kwargs["seed"])
+        return np.where(part.is_eog_flare, .8, .2), 0., 0.
+
+    monkeypatch.setattr(balanced, "cv_predict", predict)
+    monkeypatch.setattr(balanced, "active_eog_counts", lambda _: {"A": 1, "B": 2})
+    balanced.evaluate_variants(df, ["feature"], n_splits=2, rounds=1)
+    assert len(seeds) == 4 and len(set(seeds)) == 1
 
 
 def test_exact_f1_threshold_matches_brute_force():
