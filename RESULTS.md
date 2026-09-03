@@ -1,13 +1,64 @@
 # SIH26162 Results
 
-Last updated: 2026-09-02
-Run: Kaggle notebook 1, full seven-country feature build and six-country model evaluation
+Last updated: 2026-09-03
+Run: Kaggle notebooks 1 and 2, including common-window robust evaluation
 
 ## Outcome
 
 The source-level FIRMS pipeline ran successfully for all seven countries. On the complete six-country training population, LightGBM substantially outperformed the rule and Isolation Forest baselines, but its geographic generalization is weaker than the earlier Libya-and-Algeria-only experiment.
 
-The current evidence does **not** justify building the Stage 06 GRU/TCN branch. Intensity features matter more than temporal features, removing seasonality slightly improves the model, and performance declines substantially when Nigeria is held out. The next high-value task is to repair cross-country evaluation and exposure-dependent features before running the untouched India holdout.
+The common 2022-2024 window removes the largest exposure-length leak. Corrected
+leave-one-country-out evaluation confirms that geographic transfer, rather than
+model capacity, is the central limitation. The next experiment therefore balances
+countries and fragmented EOG sites and selects one operating threshold for mean
+country F1. India remains untouched.
+
+## Stage 05b robust common-window result
+
+| Model | Precision | Recall | F1 | PR-AUC | ROC-AUC |
+|---|---:|---:|---:|---:|---:|
+| Reduced LightGBM | 0.822 | 0.383 | **0.523** | 0.549 | 0.971 |
+| Bagged PU LightGBM | 0.787 | 0.367 | 0.500 | **0.556** | **0.974** |
+
+The reduced model used 1,634,155 foreign sources and 3,506 EOG-matched source
+rows. Bagged PU training slightly improved ranking but did not improve the selected
+operating-point F1. Its scores are not calibrated probabilities.
+
+The original evaluator searched only 120 score quantiles. Re-evaluating the saved
+out-of-fold predictions at every distinct score found that a single threshold near
+0.315 gives mean country F1 of 0.523 and pooled F1 near 0.589. This is a valid
+threshold correction on foreign grouped OOF predictions, not an India-tuned result.
+
+| Country | Share of rows | Share of positives | Within-country F1 at threshold 0.315 |
+|---|---:|---:|---:|
+| Algeria | 0.62% | 29.63% | 0.643 |
+| Angola | 59.37% | 0.91% | 0.340 |
+| Indonesia | 11.23% | 10.72% | 0.288 |
+| Iraq | 1.87% | 21.14% | 0.696 |
+| Libya | 0.17% | 15.57% | 0.709 |
+| Nigeria | 26.73% | 22.02% | 0.461 |
+
+This distribution explains why pooled training and threshold selection are fragile.
+Angola supplies most rows but almost none of the labelled positives, while Algeria
+and Libya supply many positives from very few rows. Stage 05c directly tests whether
+country and EOG-site balancing improves the worst-country and macro-country metrics.
+
+### Corrected Stage 05b LOCO
+
+Thresholds below were selected only from the non-held-out countries.
+
+| Held-out country | F1 | PR-AUC | Recall |
+|---|---:|---:|---:|
+| Algeria | 0.596 | 0.660 | 0.475 |
+| Angola | 0.165 | 0.231 | 0.281 |
+| Indonesia | 0.144 | 0.098 | 0.117 |
+| Iraq | 0.641 | 0.568 | 0.638 |
+| Libya | 0.667 | 0.757 | 0.550 |
+| Nigeria | 0.028 | 0.194 | 0.014 |
+
+Nigeria's corrected LOCO collapse is the strongest evidence against moving to a
+GRU or TCN now. A sequence model cannot repair a country distribution shift by
+itself.
 
 ## Experimental contract
 
@@ -170,19 +221,19 @@ Facility absence must not be counted as proof of a false positive because the fa
 
 ## Required next run
 
-Stage 05b now implements the first four items below in
-`kaggle/kg_05b_robust_tabular.py`. The code has passed local common-window,
-binary CV, PU bagging, and nested LOCO smoke tests on Libya and Algeria. Full
-six-country results remain pending until the Kaggle run completes. Exact cells
-and required artifacts are listed in `KAGGLE_05B.md`.
+Stage 05c is implemented in `kaggle/kg_05c_balanced_tabular.py` and its exact
+Notebook 3 cells are in `KAGGLE_05C.md`. It compares unweighted, EOG-site-balanced,
+square-root country-balanced, and equal-country-weighted LightGBM models. Selection
+uses macro-country F1 with PR-AUC as a tie-break. It also reports physical EOG-site
+recall and corrected nested LOCO results.
 
-1. Correct LOCO so thresholds are selected without held-out-country labels.
-2. Rebuild or retrain on a common 2022-2024 observation window.
-3. Test a reduced LightGBM specification without seasonality and coverage-dependent raw counts.
-4. Compare models using foreign-country PR-AUC, frozen-threshold recall/precision, and LOCO stability.
-5. Freeze the feature set, hyperparameters, and threshold in a manifest.
-6. Run India once and save source-level scores without retuning.
-7. Perform EOG/facility/manual-review validation and Stage 10 error analysis.
+After Stage 05c:
+
+1. Freeze the foreign model only if macro-country and corrected LOCO performance improve.
+2. Acquire source-centred Sentinel-2 and WorldCover data as described in `CV_DATA_REQUEST.md`.
+3. Build a small imagery proof of value before any full CV branch.
+4. Run India exactly once only after the feature set, model, and threshold are frozen.
+5. Perform facility and manual-review error analysis before claiming precision.
 
 ## Evidence files
 

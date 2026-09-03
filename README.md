@@ -88,6 +88,7 @@ kaggle/kg_02_source_clustering.py detections -> sources, labels, CV blocks
 kaggle/kg_03_features.py          FIRMS-only source feature construction
 kaggle/kg_05_lightgbm.py          original full LightGBM and ablations
 kaggle/kg_05b_robust_tabular.py   common-window, PU and corrected LOCO run
+kaggle/kg_05c_balanced_tabular.py country-balanced weighting and threshold run
 kaggle/kg_eval.py                 shared metrics, thresholds and split builders
 src/common.py                     local-run equivalents
 src/01_data_audit.py              streams 78 CSVs -> single parquet + audit table
@@ -95,8 +96,8 @@ src/01b_audit_report.py           audit summary
 outputs/                          audit tables and source summaries
 ```
 
-The next Kaggle experiment is documented in `KAGGLE_05B.md`. It does not load
-or score India.
+The completed robust run is documented in `KAGGLE_05B.md`. The next Kaggle
+experiment is documented in `KAGGLE_05C.md`. Neither run loads or scores India.
 
 ## FIRMS gotchas
 

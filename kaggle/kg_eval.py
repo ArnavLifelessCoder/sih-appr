@@ -2,7 +2,8 @@
 import time, json
 import numpy as np, pandas as pd
 from sklearn.metrics import (f1_score, precision_score, recall_score, average_precision_score,
-                             roc_auc_score, matthews_corrcoef, confusion_matrix, brier_score_loss)
+                             roc_auc_score, matthews_corrcoef, confusion_matrix,
+                             brier_score_loss, precision_recall_curve)
 from sklearn.model_selection import GroupKFold
 from kg_common import *
 
@@ -25,9 +26,39 @@ def metrics(y, p, thr=0.5, train_s=None, infer_s=None, name="", extra=None):
     return d
 
 def best_f1_threshold(y, p, grid=None):
-    grid = grid if grid is not None else np.unique(np.quantile(p, np.linspace(0.5, 0.999, 120)))
-    fs = [f1_score(y, (p >= t).astype(int), zero_division=0) for t in grid]
-    return float(grid[int(np.argmax(fs))]), float(np.max(fs))
+    """Return the exact score threshold that maximizes binary F1.
+
+    The previous default searched 120 score quantiles. With fewer than 0.3%
+    labelled positives, that grid skipped most of the operational score tail
+    and could miss materially better thresholds. An explicit ``grid`` is still
+    supported for sensitivity analysis; the default now evaluates every
+    precision-recall operating point.
+    """
+    y = np.asarray(y, dtype="int8")
+    p = np.asarray(p, dtype="float64")
+    if len(y) != len(p) or not len(y):
+        raise ValueError("y and p must be non-empty arrays of equal length")
+
+    if grid is not None:
+        grid = np.asarray(grid, dtype="float64")
+        if not len(grid):
+            raise ValueError("grid cannot be empty")
+        fs = np.asarray([
+            f1_score(y, p >= t, zero_division=0) for t in grid
+        ])
+        j = int(np.nanargmax(fs))
+        return float(grid[j]), float(fs[j])
+
+    if y.sum() == 0:
+        return float(np.nextafter(p.max(), np.inf)), 0.0
+
+    precision, recall, thresholds = precision_recall_curve(y, p)
+    if not len(thresholds):
+        return 0.5, 0.0
+    f1 = (2 * precision[:-1] * recall[:-1] /
+          np.maximum(precision[:-1] + recall[:-1], 1e-15))
+    j = int(np.nanargmax(f1))
+    return float(thresholds[j]), float(f1[j])
 
 def calibration_table(y, p, bins=10):
     q = pd.qcut(pd.Series(p), bins, duplicates="drop", labels=False)
