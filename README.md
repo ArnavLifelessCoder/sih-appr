@@ -90,6 +90,7 @@ kaggle/kg_05_lightgbm.py          original full LightGBM and ablations
 kaggle/kg_05b_robust_tabular.py   common-window, PU and corrected LOCO run
 kaggle/kg_05c_balanced_tabular.py country-balanced weighting and threshold run
 kaggle/kg_05d_nested_tabular.py   nested country-held-out model selection
+kaggle/kg_05e_domain_revamp.py    regularized country-transfer experiment
 kaggle/kg_09_final_india.py       frozen NB5 model inference on India
 kaggle/kg_eval.py                 shared metrics, thresholds and split builders
 src/common.py                     local-run equivalents
