@@ -89,6 +89,8 @@ kaggle/kg_03_features.py          FIRMS-only source feature construction
 kaggle/kg_05_lightgbm.py          original full LightGBM and ablations
 kaggle/kg_05b_robust_tabular.py   common-window, PU and corrected LOCO run
 kaggle/kg_05c_balanced_tabular.py country-balanced weighting and threshold run
+kaggle/kg_05d_nested_tabular.py   nested country-held-out model selection
+kaggle/kg_09_final_india.py       frozen NB5 model inference on India
 kaggle/kg_eval.py                 shared metrics, thresholds and split builders
 src/common.py                     local-run equivalents
 src/01_data_audit.py              streams 78 CSVs -> single parquet + audit table
