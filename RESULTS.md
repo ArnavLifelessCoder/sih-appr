@@ -188,8 +188,9 @@ input hashes, output hashes, and all 12 acceptance checks.
 
 The highest-value next steps are:
 
-1. Run the frozen NB12b model on India without retuning, while reporting that the strict
-   project-level holdout was already spent by NB10.
+1. Run the prepared NB13 notebook on its fixed 300-source India imagery panel. The code
+   applies NB12b without retraining or threshold tuning and reports ranking plus fixed
+   review-budget metrics. No NB13 result exists until that Kaggle run completes.
 2. Build a population-scale review queue and estimate precision with spatially stratified
    manual review.
 3. Separate flare, kiln, cement, steel, crop-burning, and wildfire errors using independent

@@ -62,6 +62,8 @@ NASA `type`, and EOG distance.
 6. Evaluate tabular, temporal, image-only, and fused branches with country-held-out
    outer evaluation and training-only threshold selection.
 7. Confirm the selected fusion policy with fresh seeds and fixed acceptance rules.
+8. Apply the frozen ensemble to a precommitted, bounded India imagery panel without
+   retraining, retuning, or claiming population precision.
 
 The temporal TCN branch did not justify replacing the tabular baseline. Image-only models
 also underperformed. CV became useful only as a guarded residual combined with compact
@@ -89,9 +91,9 @@ is sufficient to audit every reported number.
 ## Running on Kaggle
 
 Import the required notebook from `notebooks/kaggle/`, attach the saved inputs named in
-its matching `docs/runs/` file, and use Save and Run All. NB12b is the final confirmation
-run. It reuses cached image embeddings and morphology features, so its short CPU runtime
-does not include end-to-end image encoding.
+its matching `docs/runs/` file, and use Save and Run All. NB12b is the frozen foreign
+confirmation run. NB13 is the prepared India transfer evaluation and uses repeated,
+bounded image-acquisition versions before scoring the unchanged NB12b ensemble.
 
 ## Important data details
 
