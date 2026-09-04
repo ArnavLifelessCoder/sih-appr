@@ -65,11 +65,18 @@ def _write_json(path: Path, value: dict) -> None:
     temporary.replace(path)
 
 
-def _find_unique(root: Path, name: str) -> Path:
-    matches = [path for path in root.rglob(name) if path.is_file()]
+def _find_india_features(root: Path) -> Path:
+    matches = [path for path in root.rglob(FEATURE_FILE) if path.is_file()]
+    if not matches:
+        raise FileNotFoundError(
+            f"Missing {FEATURE_FILE}. Attach the saved NB10 India holdout output, "
+            "which should expose cache/features_India_2022_2024.parquet. NB2 is "
+            "foreign-only and cannot provide this file."
+        )
     if len(matches) != 1:
         raise FileNotFoundError(
-            f"Expected exactly one {name} below {root}; found {len(matches)}: {matches}"
+            f"Attach exactly one NB10 India output; found duplicate India feature "
+            f"tables: {matches}"
         )
     return matches[0]
 
@@ -220,10 +227,10 @@ def prepare(
     positive_site_quota: int = DEFAULT_POSITIVE_SITE_QUOTA,
     seed: int = PANEL_SEED,
 ) -> pd.DataFrame:
-    """Load NB2 India features and freeze the panel before image acquisition."""
+    """Load NB10 India features and freeze the panel before image acquisition."""
     input_root = Path(input_root)
     output_root = Path(output_root)
-    source_path = _find_unique(input_root, FEATURE_FILE)
+    source_path = _find_india_features(input_root)
     wanted = list(dict.fromkeys([
         "source_id",
         "country",

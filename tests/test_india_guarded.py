@@ -91,6 +91,12 @@ def test_prepare_and_offline_progress_round_trip(tmp_path):
     assert quality.review_reflectance_tail.eq(False).all()
     with pytest.raises(RuntimeError, match="pending chips"):
         india_guarded.score_frozen_model(output_root, Path(__file__).parents[1])
+
+
+def test_missing_india_features_points_to_nb10_not_nb2(tmp_path):
+    with pytest.raises(FileNotFoundError, match="NB10 India holdout") as error:
+        india_guarded.prepare(tmp_path, tmp_path / "output")
+    assert "NB2 is foreign-only" in str(error.value)
     frame = india_frame()
     frame.loc[0, "eog_flare_id"] = np.nan
     with pytest.raises(ValueError, match="positive source"):

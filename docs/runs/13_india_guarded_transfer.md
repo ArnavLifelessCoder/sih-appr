@@ -41,15 +41,16 @@ Set:
 The setup cell checks the frozen NB12b runtime versions and installs the recorded
 scikit-learn, LightGBM, and joblib versions only when Kaggle differs.
 
-For the first version, attach exactly one saved NB2 output that contains
-`features_India_2022_2024.parquet`.
+For the first version, attach exactly one saved NB10 India holdout output. Its
+saved working cache should expose `cache/features_India_2022_2024.parquet`.
+NB2 is foreign-only and must not be used as the India feature input.
 
 The notebook caps acquisition at 100 new attempts or 55 minutes per version.
 If the last cell reports pending chips:
 
 1. Choose Save Version and Save and Run All.
 2. Create the next version of NB13.
-3. Keep NB2 attached.
+3. Keep NB10 attached.
 4. Add the previous NB13 saved output as an input.
 5. Run all cells again.
 
