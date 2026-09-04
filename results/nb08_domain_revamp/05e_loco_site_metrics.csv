@@ -1,0 +1,7 @@
+experiment,country,eog_sites_total,eog_sites_recoverable,eog_sites_detected,recall_of_recoverable,recall_of_all_active
+regularized_raw,Algeria,414,361,239,0.6620498614958449,0.5772946859903382
+ranked_physics,Angola,67,10,5,0.5,0.07462686567164178
+ranked_physics,Indonesia,336,184,78,0.42391304347826086,0.23214285714285715
+ranked_compact,Iraq,262,220,164,0.7454545454545455,0.6259541984732825
+ranked_physics,Libya,200,169,141,0.834319526627219,0.705
+regularized_raw,Nigeria,412,288,72,0.25,0.17475728155339806

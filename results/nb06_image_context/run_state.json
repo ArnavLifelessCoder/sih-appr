@@ -1,0 +1,19 @@
+{
+  "protocol": "nb6-context-v1",
+  "counts": {
+    "pending": 301,
+    "ok": 295,
+    "failed": 4
+  },
+  "new_attempts": 100,
+  "elapsed_minutes": 35.8,
+  "stop_reason": "offline or per-run attempt/time limit",
+  "holdout_loaded": false,
+  "versions": {
+    "numpy": "2.0.2",
+    "pandas": "2.3.3",
+    "requests": "2.32.4",
+    "pyproj": "3.7.2",
+    "rasterio": "1.4.4"
+  }
+}

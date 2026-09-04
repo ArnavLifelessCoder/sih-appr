@@ -1,0 +1,7 @@
+experiment,country,eog_sites_total,eog_sites_recoverable,eog_sites_detected,recall_of_recoverable,recall_of_all_active
+unweighted,Algeria,414,361,226,0.6260387811634349,0.5458937198067633
+unweighted,Angola,67,10,6,0.6,0.08955223880597014
+site_balanced,Indonesia,336,184,86,0.4673913043478261,0.25595238095238093
+unweighted,Iraq,262,220,164,0.7454545454545455,0.6259541984732825
+unweighted,Libya,200,169,131,0.7751479289940828,0.655
+site_balanced,Nigeria,412,288,68,0.2361111111111111,0.1650485436893204

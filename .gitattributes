@@ -1,1 +1,13 @@
 *.pdf -text -diff
+*.docx -text -diff
+*.png -text -diff
+*.parquet -text -diff
+*.npz -text -diff
+*.joblib -text -diff
+
+# NB12b manifest hashes are byte-level integrity checks. Keep hashed text artifacts LF-only.
+kaggle/*.py text eol=lf
+artifacts/nb12b/cache/*.json text eol=lf
+artifacts/nb12b/final_models/*.txt text eol=lf
+results/nb12b_confirmatory/*.csv text eol=lf
+results/nb12b_confirmatory/*.json text eol=lf

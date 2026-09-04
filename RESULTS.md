@@ -1,51 +1,91 @@
-# SIH26162 Results
+# SIH26162 results
 
-Last updated: 2026-09-03
-Run: Kaggle notebooks 1 and 2, including common-window robust evaluation
+Last updated: 2026-09-04
 
-## Outcome
+## Final decision
 
-The source-level FIRMS pipeline ran successfully for all seven countries. On the complete six-country training population, LightGBM substantially outperformed the rule and Isolation Forest baselines, but its geographic generalization is weaker than the earlier Libya-and-Algeria-only experiment.
+The frozen foreign-country branch is `guarded_cv_tabular`, a compact tabular LightGBM
+ensemble augmented with a guarded visual residual from Sentinel-2 and WorldCover context.
+The final confirmation used three fresh seeds on one fixed panel of 294 QA-approved
+foreign sources, including 87 EOG-matched positives.
 
-The common 2022-2024 window removes the largest exposure-length leak. Corrected
-leave-one-country-out evaluation confirms that geographic transfer, rather than
-model capacity, is the central limitation. The next experiment therefore balances
-countries and fragmented EOG sites and selects one operating threshold for mean
-country F1. India remains untouched.
+| Branch | Macro F1 | Macro PR-AUC | Macro ROC-AUC | Worst-country PR-AUC |
+|---|---:|---:|---:|---:|
+| Compact tabular baseline | 0.7669 | 0.9054 | 0.9199 | 0.8250 |
+| Guarded CV plus tabular | **0.8166** | **0.9293** | **0.9481** | 0.8400 |
+| All 77 tabular features, diagnostic only | 0.7347 | 0.8935 | 0.9225 | **0.8489** |
 
-## Stage 05b robust common-window result
+Observation: guarded fusion gained 0.0239 macro PR-AUC and 0.0497 macro F1 over the
+protected compact baseline. PR-AUC improved in five of six countries. Indonesia declined
+by 0.0051, within the preregistered tolerance of 0.02.
 
-| Model | Precision | Recall | F1 | PR-AUC | ROC-AUC |
+Observation: every fresh seed produced a positive macro PR-AUC gain: 0.0234, 0.0228,
+and 0.0218. All 12 fixed acceptance conditions passed.
+
+Observation: the positive-stratified, 10 km block bootstrap estimated a mean PR-AUC gain
+of 0.0238 with a 95% interval from -0.0006 to 0.0515.
+
+Interpretation: the visual residual is stable enough to retain under the specified
+non-inferiority policy. The interval crosses zero, so the evidence does not establish a
+conventionally significant positive gain. The result supports a guarded hybrid, not a
+claim that imagery independently solves the task.
+
+## Evaluation contract
+
+- Prediction unit: one 1 km source cell, not an individual detection.
+- Development countries: Algeria, Angola, Indonesia, Iraq, Libya, and Nigeria.
+- Spatial grouping: 10 km `block_id` to reduce leakage between fragments of one site.
+- Supervision: active EOG gas-flare sites.
+- Unmatched sources: unlabelled, not verified negatives.
+- Excluded inputs: latitude, longitude, country, NASA `type`, `eog_dist_m`, and
+  NOAA-20-derived features.
+- Thresholds and fusion weights: learned only from training-country folds.
+- NB12b role: seed-stability confirmation on the same fixed foreign panel, not a new
+  country test and not a population-precision study.
+
+## Data and source construction
+
+The audit covered 19,342,072 FIRMS detections across seven countries. There were no
+null values, malformed acquisition dates, or exact duplicate rows. A total of 754 rows,
+about 0.004%, had non-positive FRP.
+
+| Country | Detections | Sources | EOG sites | Sites recovered | Source-construction recall |
 |---|---:|---:|---:|---:|---:|
-| Reduced LightGBM | 0.822 | 0.383 | **0.523** | 0.549 | 0.971 |
-| Bagged PU LightGBM | 0.787 | 0.367 | 0.500 | **0.556** | **0.974** |
+| Iraq | 1,289,983 | 47,978 | 266 | 231 | 86.8% |
+| Algeria | 744,252 | 19,122 | 438 | 397 | 90.6% |
+| Nigeria | 3,914,564 | 554,299 | 436 | 333 | 76.4% |
+| Libya | 427,517 | 4,824 | 202 | 175 | 86.6% |
+| Angola | 4,869,716 | 970,253 | 73 | 11 | 15.1% |
+| Indonesia | 501,771 | 183,558 | 370 | 188 | 50.8% |
+| India | 7,594,269 | 1,258,787 | 193 | 133 | 68.9% |
 
-The reduced model used 1,634,155 foreign sources and 3,506 EOG-matched source
-rows. Bagged PU training slightly improved ranking but did not improve the selected
-operating-point F1. Its scores are not calibrated probabilities.
+Libya illustrates why source aggregation matters: 427,517 detections become 4,824 source
+cells, about 89 detections per source. A 1 km grid retained roughly 88% to 92% of known
+EOG sites in the Libya and Algeria resolution sweep while limiting fragmentation.
 
-The original evaluator searched only 120 score quantiles. Re-evaluating the saved
-out-of-fold predictions at every distinct score found that a single threshold near
-0.315 gives mean country F1 of 0.523 and pooled F1 near 0.589. This is a valid
-threshold correction on foreign grouped OOF predictions, not an India-tuned result.
+The common-window feature population contains 1,634,155 foreign sources with 3,506
+EOG-matched source rows. MODIS and VIIRS S-NPP are used uniformly. NOAA-20 is absent
+for Angola and Indonesia, so using its presence or ratios would create a country shortcut.
 
-| Country | Share of rows | Share of positives | Within-country F1 at threshold 0.315 |
-|---|---:|---:|---:|
-| Algeria | 0.62% | 29.63% | 0.643 |
-| Angola | 59.37% | 0.91% | 0.340 |
-| Indonesia | 11.23% | 10.72% | 0.288 |
-| Iraq | 1.87% | 21.14% | 0.696 |
-| Libya | 0.17% | 15.57% | 0.709 |
-| Nigeria | 26.73% | 22.02% | 0.461 |
+## Experiment progression
 
-This distribution explains why pooled training and threshold selection are fragile.
-Angola supplies most rows but almost none of the labelled positives, while Algeria
-and Libya supply many positives from very few rows. Stage 05c directly tests whether
-country and EOG-site balancing improves the worst-country and macro-country metrics.
+Results below use different cohorts and protocols. They show the research progression and
+must not be read as one directly comparable leaderboard.
 
-### Corrected Stage 05b LOCO
+### Initial tabular work
 
-Thresholds below were selected only from the non-held-out countries.
+The early Libya plus Algeria experiment reported LightGBM F1 0.691, PR-AUC 0.740,
+and ROC-AUC 0.930. It established that source-level aggregation and engineered thermal
+features were useful, but it did not test geographic transfer.
+
+On the larger six-country common-window population, the full 49-feature LightGBM reached
+F1 0.523, PR-AUC 0.575, and ROC-AUC 0.974. Intensity was the most important ablation
+family. Removing seasonality slightly improved F1, which exposed coverage and regional
+shortcut risk.
+
+### Corrected country transfer
+
+Stage 05b selected each held-out-country threshold only from the remaining countries.
 
 | Held-out country | F1 | PR-AUC | Recall |
 |---|---:|---:|---:|
@@ -56,196 +96,104 @@ Thresholds below were selected only from the non-held-out countries.
 | Libya | 0.667 | 0.757 | 0.550 |
 | Nigeria | 0.028 | 0.194 | 0.014 |
 
-Nigeria's corrected LOCO collapse is the strongest evidence against moving to a
-GRU or TCN now. A sequence model cannot repair a country distribution shift by
-itself.
+Macro F1 was 0.374 and macro PR-AUC was 0.418. Nigeria's collapse showed that the main
+problem was geographic transfer rather than insufficient sequence-model capacity.
 
-## Experimental contract
+Country and EOG-site weighting in Stage 05c improved some operating points but remained
+unstable. The unweighted development variant had macro-country F1 0.529 and macro-country
+PR-AUC 0.499 on its grouped development predictions. Equal-country weighting performed
+worse, so simple reweighting was not adopted as the solution.
 
-- Unit of analysis: a spatial source produced by 1 km metric grid clustering, not an individual FIRMS detection.
-- Training/model-selection countries: Iraq, Algeria, Nigeria, Libya, Angola, and Indonesia.
-- Untouched holdout: India. No Indian row may be used for fitting, feature selection, threshold selection, or hyperparameter selection.
-- Supervision: active EOG/World Bank gas-flare sites.
-- Unmatched sources are **unlabelled**, not verified negatives. EOG does not label kilns, cement plants, steelworks, or every gas flare.
-- Validation grouping: 10 km `block_id`, so fragments of one physical flare cannot cross ordinary CV folds.
-- Excluded model inputs: latitude, longitude, country, NASA `type`, `eog_dist_m`, and NOAA-20-derived features.
+Nested selection in Stage 05d raised country-held-out macro F1 to 0.435 but macro PR-AUC
+remained 0.420. The NB8 domain revamp improved these to 0.441 and 0.460. These values
+still reflected large country variation.
 
-Because this is a positive-unlabelled problem, reported precision is a lower bound and conventional F1 is an operational proxy rather than a complete measure of industrial-source classification.
+### Imagery and fusion
 
-## Source construction
+The acquisition pipeline requested a bounded foreign-country panel from Sentinel-2 L2A
+and ESA WorldCover. The final NB6 v2 manifest contains 295 successful chips, four failed
+chips, and 301 pending candidates. After QA and label alignment, 294 sources entered the
+fixed evaluation panel.
 
-| Country | FIRMS detections | Sources | EOG sites | EOG sites recovered | Site recall | Labelled source rows |
-|---|---:|---:|---:|---:|---:|---:|
-| Iraq | 1,289,983 | 47,978 | 266 | 231 | 86.8% | 822 |
-| Algeria | 744,252 | 19,122 | 438 | 397 | 90.6% | 1,256 |
-| Nigeria | 3,914,564 | 554,299 | 436 | 333 | 76.4% | 980 |
-| Libya | 427,517 | 4,824 | 202 | 175 | 86.6% | 622 |
-| Angola | 4,869,716 | 970,253 | 73 | 11 | 15.1% | 35 |
-| Indonesia | 501,771 | 183,558 | 370 | 188 | 50.8% | 380 |
-| India | 7,594,269 | 1,258,787 | 193 | 133 | 68.9% | 343 |
+NB9 compared four branches on that EOG-enriched panel:
 
-`EOG sites` counts physical flare sites. `Labelled source rows` can be larger because one physical flare may intersect several 1 km source cells.
-
-The feature builder retains only sources detected by the two uniformly available instruments, MODIS and VIIRS S-NPP. This produces 1,687,353 foreign training sources with 3,766 EOG-matched source rows and 992,536 Indian feature rows with 276 EOG-matched source rows.
-
-The source-construction recall of 68.9% is the current upstream ceiling for evaluating recovery of the 193 known Indian EOG sites unless clustering or EOG matching is changed.
-
-## Baselines
-
-Results use the full six-country training population.
-
-| Method | Precision | Recall | F1 | PR-AUC | ROC-AUC |
-|---|---:|---:|---:|---:|---:|
-| Best simple rule: `n_days >= 10` and `month_entropy >= 0.7` | 0.561 | 0.434 | 0.489 | 0.245 | 0.717 |
-| Isolation Forest, all features | 0.120 | 0.279 | 0.168 | 0.060 | 0.892 |
-| LightGBM, 49 features | 0.845 | 0.379 | **0.523** | **0.575** | **0.974** |
-
-The earlier Libya-and-Algeria-only LightGBM F1 of approximately 0.691 should not be presented as the final model result. Adding the full geographic training population reduces F1 to 0.523 and exposes substantial regional variation.
-
-The global LightGBM operating threshold was 0.747, selected from spatially grouped out-of-fold predictions. At that threshold the model produced 1,688 positive predictions: 1,427 EOG-matched positives, 261 nominal false positives, and 2,339 missed EOG-matched source rows.
-
-## Feature ablation
-
-### Cumulative groups
-
-| Feature groups | Features | F1 | PR-AUC | ROC-AUC |
-|---|---:|---:|---:|---:|
-| Temporal only | 9 | 0.445 | 0.419 | 0.906 |
-| Temporal + intensity | 34 | 0.513 | 0.535 | 0.965 |
-| + seasonality | 36 | 0.515 | 0.545 | 0.965 |
-| + local-time features | 39 | **0.524** | 0.565 | 0.973 |
-| All seven feature groups | 49 | 0.518 | 0.572 | 0.974 |
-
-Small differences between the `LGBM full` row and the cumulative all-groups row arise from the feature ordering used during stochastic LightGBM training.
-
-### Leave-one-group-out
-
-| Removed group | F1 | PR-AUC | Interpretation |
-|---|---:|---:|---|
-| Temporal | 0.514 | 0.568 | Only a small reduction; weak support for a sequence model |
-| Intensity | 0.497 | 0.543 | Largest harmful removal; intensity is essential |
-| Seasonality | **0.530** | 0.577 | Improves the result; current seasonality features are not helping |
-| Timing | 0.524 | 0.565 | Similar F1 but lower ROC-AUC |
-| Cross-instrument | 0.521 | 0.580 | Similar F1 and slightly better PR-AUC |
-| Confidence | 0.522 | 0.580 | Similar F1 and slightly better PR-AUC |
-| Spatial | 0.521 | 0.565 | Little incremental value |
-
-`month_entropy` dominates gain importance at 301,754, more than four times `night_frac`, the second-ranked feature at 68,366. `n_months` is fourth. This concentration, combined with the improvement obtained by removing seasonality, warrants a robustness check before India is scored.
-
-## Leave-one-country-out evaluation
-
-| Held-out country | Positive rows | PR-AUC | ROC-AUC | Reported F1 |
-|---|---:|---:|---:|---:|
-| Algeria | 1,128 | 0.647 | 0.898 | 0.636 |
-| Angola | 35 | 0.150 | 0.919 | 0.024 |
-| Indonesia | 380 | 0.107 | 0.905 | 0.217 |
-| Iraq | 781 | 0.653 | 0.910 | 0.679 |
-| Libya | 577 | 0.748 | 0.906 | 0.728 |
-| Nigeria | 865 | 0.281 | 0.876 | 0.351 |
-
-### LOCO limitation
-
-The current Stage 05 implementation calls `best_f1_threshold(yt, p)` after predicting each held-out country. It therefore uses the held-out labels to select that country's threshold. The reported LOCO F1, precision, and recall are optimistic and must not be treated as deployment estimates.
-
-PR-AUC and ROC-AUC remain threshold-independent and are usable for diagnosis. They show strong ranking performance for Libya, Iraq, and Algeria but a large decline for Nigeria. Angola contains only 35 matched source rows and is particularly unsuitable for conventional binary precision/F1 interpretation because its unmatched population includes unlabelled flares and other industrial sources.
-
-A valid LOCO procedure must select the threshold using only grouped out-of-fold predictions from the remaining countries, then apply that frozen threshold to the held-out country.
-
-## Frozen global-threshold diagnostic
-
-Applying the global grouped-CV threshold of 0.747 to the saved OOF predictions gives the following within-country diagnostic. This is not LOCO because the corresponding training folds still contain other spatial blocks from the same country.
-
-| Country | Precision | Recall | F1 |
+| Branch | Macro F1 | Macro PR-AUC | Macro ROC-AUC |
 |---|---:|---:|---:|
-| Algeria | 0.869 | 0.407 | 0.554 |
-| Angola | 0.500 | 0.029 | 0.054 |
-| Indonesia | 0.460 | 0.105 | 0.171 |
-| Iraq | 0.844 | 0.588 | 0.693 |
-| Libya | 0.890 | 0.503 | 0.642 |
-| Nigeria | 0.886 | 0.206 | 0.334 |
+| Early fusion | **0.7916** | **0.9059** | **0.9202** |
+| Late fusion | 0.7772 | 0.8710 | 0.9076 |
+| Thermal only | 0.6620 | 0.8138 | 0.8491 |
+| Image only | 0.6744 | 0.7423 | 0.8604 |
 
-This confirms that one global threshold produces high nominal precision but low recall, especially in Nigeria and the vegetation-fire background countries.
+Image-only performance was insufficient. Early fusion was retained as the stronger design.
 
-## Coverage-horizon risk
+NB11 tested temporal descriptors and a TCN:
 
-The observation windows differ by country:
+| Branch | Macro F1 | Macro PR-AUC | Macro ROC-AUC |
+|---|---:|---:|---:|
+| Nested champion | **0.8140** | **0.9089** | **0.9250** |
+| NB9 baseline | 0.7916 | 0.9059 | 0.9202 |
+| Temporal descriptors | 0.7933 | 0.9023 | 0.9189 |
+| TCN only | 0.7083 | 0.8034 | 0.8570 |
 
-- India: 2019-2024, six years.
-- Iraq, Algeria, Nigeria, and Libya: 2021-2024, four years.
-- Angola and Indonesia: 2022-2024, three years.
+The TCN did not justify takeover. Temporal evidence remains useful as engineered summary
+features, but the neural sequence branch added complexity without stronger ranking.
 
-Several features depend directly on exposure length: `n_det`, `n_days`, `n_months`, `n_years`, `span_days`, and total FRP. `n_months` counts distinct year-month pairs rather than calendar months of the year. These features can therefore encode the country-specific observation window even though explicit country and coordinates were removed. India is also outside the training range for maximum exposure.
+NB12 introduced CNN embeddings, multispectral summaries, morphology, and protected
+tabular baselines. Its discovery result favored guarded CV plus tabular fusion at PR-AUC
+0.9283 versus 0.9082 for compact tabular. NB12b then repeated the fixed comparison with
+fresh seeds and produced the final decision shown at the top of this document.
 
-Before final India inference, the pipeline should either:
+At a 20% review budget, the compact baseline found 55 of 87 known positives across the
+six country panels, while guarded fusion found 54. The only loss was one known positive
+in Libya. This met the preregistered operational tolerance but shows why the visual branch
+must remain guarded.
 
-1. rebuild every country on a common window such as 2022-2024; or
-2. replace raw exposure-dependent counts with annualized or opportunity-normalized quantities and validate that the values are comparable across windows.
+## Historical India evaluation
 
-The common-window experiment is the cleaner primary analysis. A full-history, exposure-normalized model can be retained as a sensitivity analysis.
+India is no longer a pristine project-level holdout. A completed NB10 run evaluated the
+superseded NB8 `regularized_raw` model before the later NB12 and NB12b work.
 
-## Calibration
+| Model and cohort | Sources | Positive rows | Precision | Recall | F1 | PR-AUC | ROC-AUC |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Historical NB8 model on India | 706,686 | 197 | 0.093 | 0.391 | 0.151 | 0.142 | 0.915 |
 
-The saved OOF predictions contain 1,687,353 rows with no missing values or duplicate `source_id` values. The ten equal-frequency calibration bins are nearly all zero because EOG-matched rows are extremely rare; the highest decile has mean predicted probability 0.0182 and observed positive prevalence 0.0206.
+Of 187 active EOG sites in that run, 97 were recoverable after candidate construction and
+49 were detected. Recall was 50.5% of recoverable sites and 26.2% of all active sites.
 
-The small Brier score is dominated by the overwhelming unlabelled majority and should not be interpreted as proof of good positive-class calibration. Future calibration reporting should use top-tail or log-spaced probability bins and a precision-recall curve.
+The final NB12b model has not been evaluated on India. India remained absent from NB12
+and NB12b training, feature selection, thresholding, fusion-weight selection, and seed
+confirmation. Any future NB12b India result must be described as a final-model transfer
+evaluation, not as a first untouched test.
 
-## Decisions
+## Limitations
 
-### Stage 06: temporal GRU/TCN
+1. EOG labels identify gas flares, not every type of industrial thermal source. F1 and
+   nominal precision measure agreement with incomplete proxy labels.
+2. The NB12b panel is EOG-enriched. Its precision and prevalence do not represent the
+   full source population.
+3. NB12b reuses the same 294-source cohort. Three seeds measure algorithmic variation,
+   not new-country sampling variation.
+4. The bootstrap interval crosses zero. The visual residual passed the predefined guard,
+   but its positive benefit remains uncertain.
+5. Candidate construction limits site recall, especially in Angola and Indonesia.
+6. Facility catalogues are incomplete. Absence from a catalogue is not proof that a
+   high-scoring source is a false positive.
 
-**Do not build yet.** Temporal-only LightGBM reaches F1 0.445, adding intensity raises it to 0.513, and removing the temporal group from the full model only lowers F1 from 0.523 to 0.514. Geographic generalization, label incompleteness, coverage normalization, and threshold validity are more important than model capacity.
+## Frozen artifacts and next work
 
-### Stage 07: imagery branch
+The exact NB12b ensemble is stored under `artifacts/nb12b/`: nine compact LightGBM models,
+three visual PU models, one fusion calibration file, and the hashed embedding and morphology
+caches. `results/nb12b_confirmatory/12b_manifest.json` records the protocol, versions,
+input hashes, output hashes, and all 12 acceptance checks.
 
-**Keep dropped.** Sentinel-2, Landsat, and WorldCover imagery are not included. External acquisition would add the most expensive branch before the tabular evaluation is trustworthy.
+The highest-value next steps are:
 
-### Stage 08: stacking
+1. Run the frozen NB12b model on India without retuning, while reporting that the strict
+   project-level holdout was already spent by NB10.
+2. Build a population-scale review queue and estimate precision with spatially stratified
+   manual review.
+3. Separate flare, kiln, cement, steel, crop-burning, and wildfire errors using independent
+   validation sources.
+4. Improve candidate coverage before claiming facility-level recall.
 
-**Keep deferred.** There is only one validated predictive branch. Stacking is not justified without an independently useful second branch.
-
-### Stage 09: India holdout
-
-**Data ready; evaluation not yet authorized.** `features_India.parquet` exists and contains 992,536 modeled sources. India must remain untouched until the model specification, feature window, and operating threshold are frozen using foreign countries only.
-
-### Stage 10: error analysis
-
-After India inference, evaluate:
-
-- known EOG flare-site recall, including onshore/offshore and flare-size strata;
-- recall against thermally plausible GEM and fuel-burning WRI facilities;
-- OSM flare and kiln matches;
-- kiln versus crop-burning confusions in kiln-heavy states;
-- a spatially stratified manual sample of unmatched high-score predictions for precision estimation.
-
-Facility absence must not be counted as proof of a false positive because the facility catalogues are incomplete.
-
-## Required next run
-
-Stage 05c is implemented in `kaggle/kg_05c_balanced_tabular.py` and its exact
-Notebook 3 cells are in `KAGGLE_05C.md`. It compares unweighted, EOG-site-balanced,
-square-root country-balanced, and equal-country-weighted LightGBM models. Selection
-uses macro-country F1 with PR-AUC as a tie-break. It also reports physical EOG-site
-recall and corrected nested LOCO results.
-
-After Stage 05c:
-
-1. Freeze the foreign model only if macro-country and corrected LOCO performance improve.
-2. Acquire source-centred Sentinel-2 and WorldCover data as described in `CV_DATA_REQUEST.md`.
-3. Build a small imagery proof of value before any full CV branch.
-4. Run India exactly once only after the feature set, model, and threshold are frozen.
-5. Perform facility and manual-review error analysis before claiming precision.
-
-## Evidence files
-
-Raw result artifacts are stored in `../output nb1/`:
-
-- `02_source_summary.csv`
-- `04_baselines.csv`
-- `05_lgbm_ablation.csv`
-- `05_lgbm_leave_country_out.csv`
-- `05_feature_importance.csv`
-- `05_oof_predictions.parquet`
-- `features_<country>.parquet`
-- `sih-ag-p-log.log`
-
-The Kaggle run completed without a model error. The only warnings in the log are debugger and notebook-conversion warnings unrelated to the experiment.
+The evidence registry in `results/README.md` maps each stage to its retained files.

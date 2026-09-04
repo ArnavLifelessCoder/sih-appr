@@ -1,0 +1,48 @@
+{
+  "protocol": "nb6-context-v1",
+  "seed": 42,
+  "countries": [
+    "Algeria",
+    "Angola",
+    "Indonesia",
+    "Iraq",
+    "Libya",
+    "Nigeria"
+  ],
+  "sentinel_collection": "sentinel-2-c1-l2a",
+  "dates": "2022-01-01T00:00:00Z/2024-12-31T23:59:59Z",
+  "bands": [
+    "blue",
+    "green",
+    "red",
+    "nir",
+    "swir16",
+    "swir22"
+  ],
+  "shape": [
+    6,
+    200,
+    200
+  ],
+  "pixel_m": 10,
+  "minimum_clear_fraction": 0.8,
+  "max_scenes": 8,
+  "clear_scl_classes": [
+    4,
+    5,
+    6
+  ],
+  "holdout_loaded": false,
+  "n_per_country": 100,
+  "positive_per_country": 32,
+  "input_sha256": {
+    "features_Algeria_2022_2024.parquet": "03bf7e040c8599835314163f86ba76ee81be3ec0f44a7f063a0a1c66e763acdb",
+    "features_Angola_2022_2024.parquet": "ad2ce182fa780953bdb7f347b50f570ac92d0a7d0f9e8523103e5b5648be0795",
+    "features_Indonesia_2022_2024.parquet": "1654e9692545b8aa5e50b191d0d5203ecaee355b64f62516b6bced8cccb02fe2",
+    "features_Iraq_2022_2024.parquet": "5c524d2af713113e56a32129f2ac3df98edaed3fcfcebdc6824e0b4459efb904",
+    "features_Libya_2022_2024.parquet": "56dc38b49baaee7024643617252ebf2d6d846b071ebea1ea40385807d878fd70",
+    "features_Nigeria_2022_2024.parquet": "179c61731e9a9f43d1f0888af50f9e7fc7ab047824d423318641824f52f889ee"
+  },
+  "sample_sha256": "e151ebdbed179744c0e8006e7b5fd0e69ce836f7eb7e85f211110bcee2895b80",
+  "purpose": "enriched image-context development sample, no training or population precision estimate"
+}

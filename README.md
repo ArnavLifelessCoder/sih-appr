@@ -1,111 +1,103 @@
-# SIH26162: Persistent industrial thermal source detection
+# SIH26162: persistent industrial thermal-source detection
 
-Separating industrial thermal sources (gas flares, kilns, furnaces) from natural and
-agricultural fires, using NASA FIRMS active-fire detections plus contextual geospatial data.
+This repository groups repeated NASA FIRMS detections into candidate sources and ranks
+sources that behave like persistent industrial heat. Known EOG gas-flare sites provide
+positive supervision. Unmatched sources are unlabelled, not confirmed negatives, because
+they can include kilns, cement plants, steelworks, missed flares, crop burning, or wildfire.
 
-## Data
+## Current result
 
-Not committed (1.5 GB extracted). Upload the source ZIP as a Kaggle Dataset; `kg_common.py`
-auto-discovers the root under `/kaggle/input`. Locally, set `SIH_DATA=/path/to/data`.
+The frozen foreign-country model is the NB12b guarded CV plus tabular ensemble. On one
+stable, EOG-enriched panel of 294 sources from Algeria, Angola, Indonesia, Iraq, Libya,
+and Nigeria, its country-macro scores were:
 
-| Path | Contents | Role |
-|---|---|---|
-| `data/firms/` | 78 CSVs: MODIS (28), VIIRS S-NPP (28), VIIRS NOAA-20 (22) | model input |
-| `data/eog/flare_inventory/` | World Bank / Payne Institute flare inventory, 2 XLSX | labels |
-| `data/facilities/` | GEM (7 XLSX), OSM India (24 GeoJSON), WRI GPPD (1 CSV) | validation only |
+| Model | Macro F1 | Macro PR-AUC | Macro ROC-AUC | Worst-country PR-AUC |
+|---|---:|---:|---:|---:|
+| Compact tabular baseline | 0.767 | 0.905 | 0.920 | 0.825 |
+| Guarded CV plus tabular | **0.817** | **0.929** | **0.948** | 0.840 |
 
-### Verified audit numbers
+All 12 preregistered acceptance checks passed. The PR-AUC gain was positive for all
+three fresh seeds. The grouped country-stratified bootstrap interval for the mean gain
+was -0.0006 to 0.0515, so the experiment supports the non-inferiority guard but does not
+establish a conventionally significant positive gain. These panel metrics compare models;
+they are not population precision estimates.
 
-19,342,072 FIRMS detections across 7 countries, 2019–2024. Zero nulls, zero malformed
-dates, zero exact duplicate rows. 754 rows (0.004%) have `frp <= 0`.
+India requires careful wording. A historical India run was completed with the superseded
+NB8 model and produced F1 0.151 and PR-AUC 0.142 on 706,686 sources. The final NB12b
+guarded model has not been evaluated on India. Therefore India is not a pristine
+project-level holdout, although it remained excluded from NB12 and NB12b training,
+selection, calibration, and thresholding.
 
-| Country | MODIS | VIIRS_N20 | VIIRS_SNPP | Total | Years |
-|---|---|---|---|---|---|
-| India | 496,769 | 3,574,545 | 3,522,955 | 7,594,269 | 2019–24 |
-| Angola | 1,039,703 | N/A | 3,830,013 | 4,869,716 | 2022–24 |
-| Nigeria | 278,411 | 1,818,841 | 1,817,312 | 3,914,564 | 2021–24 |
-| Iraq | 142,218 | 562,857 | 584,908 | 1,289,983 | 2021–24 |
-| Algeria | 23,476 | 359,698 | 361,078 | 744,252 | 2021–24 |
-| Indonesia | 86,977 | N/A | 414,794 | 501,771 | 2022–24 |
-| Libya | 20,952 | 201,137 | 205,428 | 427,517 | 2021–24 |
+See [RESULTS.md](RESULTS.md) for the complete progression and limitations.
 
-EOG active flare sites, 2019–2024: Algeria 438, Nigeria 436, Iraq 266, Libya 202
-(**1,342 training positives total**), India 193, Indonesia 370, Angola 73.
+## Data audit
 
-## Design decisions
+The source archive contains 19,342,072 FIRMS detections from seven countries over
+2019-2024. The audit found no nulls, malformed dates, or exact duplicate rows. The
+training labels contain 1,342 active EOG flare sites across Algeria, Nigeria, Iraq,
+and Libya.
 
-**Unit of analysis is a source, not a detection row.** Libya collapses from 427,517
-detections to 4,824 sources (89 detections each). Row-level modelling would train on
-near-duplicates of the same physical object.
+| Country | FIRMS detections | Coverage | NOAA-20 availability |
+|---|---:|---|---|
+| India | 7,594,269 | 2019-2024 | yes |
+| Angola | 4,869,716 | 2022-2024 | no |
+| Nigeria | 3,914,564 | 2021-2024 | yes |
+| Iraq | 1,289,983 | 2021-2024 | yes |
+| Algeria | 744,252 | 2021-2024 | yes |
+| Indonesia | 501,771 | 2022-2024 | no |
+| Libya | 427,517 | 2021-2024 | yes |
 
-**Clustering is metric grid snapping at 1000 m**, chosen by a sweep over 500–5000 m:
+NOAA-20-derived features are excluded because missing coverage in Angola and Indonesia
+would reveal country identity. The model also excludes latitude, longitude, country,
+NASA `type`, and EOG distance.
 
-| grid | sources (Libya/Algeria) | EOG recall | fragmentation |
-|---|---|---|---|
-| 500 m | 7,561 / 34,642 | 88% / 90% | 6.6x / 5.8x |
-| **1000 m** | **4,824 / 19,122** | **88% / 92%** | **4.2x / 3.9x** |
-| 2000 m | 3,263 / 10,861 | 83% / 90% | 2.9x / 2.9x |
-| 5000 m | 1,700 / 4,768 | 74% / 77% | 2.1x / 2.1x |
+## Method
 
-Grid snapping is preferred over DBSCAN/agglomeration because 8-neighbour chaining merges
-a flare into an adjacent wildfire front during India's burning season.
+1. Audit and normalize FIRMS, EOG, and validation inputs.
+2. Aggregate detections into 1 km source cells.
+3. Group validation by 10 km spatial block to reduce source-fragment leakage.
+4. Build persistence, intensity, spectral, timing, seasonality, sensor, and spread
+   features from MODIS and VIIRS S-NPP.
+5. Acquire Sentinel-2 and WorldCover context for a bounded foreign-country panel.
+6. Evaluate tabular, temporal, image-only, and fused branches with country-held-out
+   outer evaluation and training-only threshold selection.
+7. Confirm the selected fusion policy with fresh seeds and fixed acceptance rules.
 
-**Splitting is on 10 km `block_id`, never on `source_id`.** One physical flare fragments
-into ~4 grid sources at any usable resolution, so fragments of the same site would
-otherwise straddle a train/validation boundary and inflate scores.
+The temporal TCN branch did not justify replacing the tabular baseline. Image-only models
+also underperformed. CV became useful only as a guarded residual combined with compact
+tabular evidence.
 
-**This is positive-unlabelled learning, not binary classification.** EOG covers gas flares
-(>~1100 C) only. A brick kiln, cement plant or steel furnace is industrial but absent from
-EOG, so an unmatched source is unlabelled, not negative.
+## Repository map
 
-## Known constraints
+| Path | Contents |
+|---|---|
+| `kaggle/` | Reusable pipeline implementations for clustering, features, evaluation, CV, temporal models, fusion, and India inference |
+| `notebooks/kaggle/` | Importable Kaggle notebooks for the main numbered runs |
+| `docs/runs/` | Exact run instructions and input contracts |
+| `docs/data/` | Imagery and external-data request specification |
+| `results/` | Curated CSV, JSON, compact parquet, and QA evidence from completed runs |
+| `artifacts/nb12b/` | Frozen final NB12b models, calibration, embeddings, and morphology inputs |
+| `output/pdf/` | Current plain-text project report |
+| `src/` | Local audit utilities |
+| `tests/` | Leakage, schema, evaluation, and artifact-contract tests |
+| `docs/archive/` | Superseded narrative documents retained only for history |
 
-- **NOAA-20 is missing for Angola and Indonesia.** Raw cross-instrument detection ratios
-  would encode country identity, which correlates with the label. Use a sensor-availability
-  mask.
-- **`facilities/` is India-only, and India is the untouched holdout.** Distance-to-infrastructure
-  features therefore do not exist at training time and cannot be part of a training ablation.
-- **Do not train on NASA `type`.** `type=2` is produced by NASA's own persistence mask;
-  training persistence features against it reproduces the mask. `type=3` (offshore) is
-  usable as a hard constraint.
-- **Distance-to-nearest-EOG-flare is the label** and must never become a feature.
-- ESA WorldCover and Sentinel-2/Landsat imagery are **not present** and must be sourced
-  externally (GEE / Copernicus / Planetary Computer) before any CV branch.
+Large raw detections, feature tables, image chips, notebook logs, and population prediction
+files are intentionally excluded from Git. The compact evidence retained in `results/`
+is sufficient to audit every reported number.
 
-## Country roles
+## Running on Kaggle
 
-Fixed by the data explainer; India is never used for fitting or model selection.
+Import the required notebook from `notebooks/kaggle/`, attach the saved inputs named in
+its matching `docs/runs/` file, and use Save and Run All. NB12b is the final confirmation
+run. It reuses cached image embeddings and morphology features, so its short CPU runtime
+does not include end-to-end image encoding.
 
-- Train (positives): Iraq, Algeria, Nigeria, Libya
-- Train (background): Angola, Indonesia
-- Holdout: India
+## Important data details
 
-## Layout
-
-```
-kaggle/kg_common.py               config, loaders, EOG label join
-kaggle/kg_02_source_clustering.py detections -> sources, labels, CV blocks
-kaggle/kg_03_features.py          FIRMS-only source feature construction
-kaggle/kg_05_lightgbm.py          original full LightGBM and ablations
-kaggle/kg_05b_robust_tabular.py   common-window, PU and corrected LOCO run
-kaggle/kg_05c_balanced_tabular.py country-balanced weighting and threshold run
-kaggle/kg_05d_nested_tabular.py   nested country-held-out model selection
-kaggle/kg_05e_domain_revamp.py    regularized country-transfer experiment
-kaggle/kg_09_final_india.py       frozen NB5 model inference on India
-kaggle/kg_eval.py                 shared metrics, thresholds and split builders
-src/common.py                     local-run equivalents
-src/01_data_audit.py              streams 78 CSVs -> single parquet + audit table
-src/01b_audit_report.py           audit summary
-outputs/                          audit tables and source summaries
-```
-
-The completed robust run is documented in `KAGGLE_05B.md`. The next Kaggle
-experiment is documented in `KAGGLE_05C.md`. Neither run loads or scores India.
-
-## FIRMS gotchas
-
-- `acq_time` is `"0136"` (HHMM). Read as string and zero-pad; reading as int corrupts it.
-- NOAA-20 files are named `viirs-jpss1_*`; globbing `viirs-noaa20*` silently returns nothing.
-- `confidence` is numeric 0–100 for MODIS and categorical `n`/`l`/`h` for VIIRS.
-- MODIS `brightness`/`bright_t31` and VIIRS `bright_ti4`/`bright_ti5` unify to `t_mir`/`t_lwir`.
-- VIIRS `bright_ti4` saturates hard at 367.0 K (2.0% MODIS, 3.7% N20, 6.1% S-NPP).
+- `acq_time` must be read as a zero-padded HHMM string.
+- NOAA-20 files use the `viirs-jpss1_*` naming pattern.
+- MODIS confidence is numeric, while VIIRS confidence is categorical.
+- VIIRS MIR brightness saturates at 367 K and saturation must be modeled explicitly.
+- The final scores measure agreement with incomplete gas-flare labels, not verified
+  accuracy for every industrial source category.

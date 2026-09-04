@@ -1,0 +1,300 @@
+{
+  "protocol": "12-cv-tabular-nested-loco-v1",
+  "status": "complete",
+  "training_countries": [
+    "Algeria",
+    "Angola",
+    "Indonesia",
+    "Iraq",
+    "Libya",
+    "Nigeria"
+  ],
+  "holdout_country": "India",
+  "holdout_loaded": false,
+  "interpretation": "Enriched foreign imagery reranker comparison, not population precision",
+  "selected_branch": "compact_tabular",
+  "deployment_branch": "compact_tabular",
+  "selected_branch_estimate": "preregistered compact fallback estimate",
+  "selection_guard": {
+    "minimum_macro_ap_gain": 0.01,
+    "minimum_improved_countries": 4,
+    "minimum_worst_country_delta": -0.02,
+    "minimum_indonesia_delta": -0.02,
+    "minimum_bootstrap_lower_95": -0.01,
+    "minimum_macro_f1_delta": -0.01
+  },
+  "selection_results": {
+    "all77_tabular": {
+      "candidate": "all77_tabular",
+      "macro_ap_gain": -0.008259669896364489,
+      "improved_countries": 3,
+      "worst_country_delta": -0.045634920634920584,
+      "indonesia_delta": -0.025408862686545186,
+      "macro_f1_delta": 0.002820817526699826,
+      "country_deltas": {
+        "Algeria": 0.018233943994813595,
+        "Angola": -0.045634920634920584,
+        "Indonesia": -0.025408862686545186,
+        "Iraq": -0.01837835685724909,
+        "Libya": 0.01048303261925565,
+        "Nigeria": 0.01114714418645868
+      },
+      "bootstrap": {
+        "mean": -0.007607733464583838,
+        "lower_95": -0.03126161538041556,
+        "upper_95": 0.010236106529660328,
+        "repeats": 1000
+      },
+      "passed": false
+    },
+    "guarded_cv_tabular": {
+      "candidate": "guarded_cv_tabular",
+      "macro_ap_gain": 0.020083562752899964,
+      "improved_countries": 6,
+      "worst_country_delta": 0.0007171051173064935,
+      "indonesia_delta": 0.0007171051173064935,
+      "macro_f1_delta": 0.041551565718232375,
+      "country_deltas": {
+        "Algeria": 0.004556378285102247,
+        "Angola": 0.023809523809523947,
+        "Indonesia": 0.0007171051173064935,
+        "Iraq": 0.02335893126973243,
+        "Libya": 0.021902087420663463,
+        "Nigeria": 0.0461573506150712
+      },
+      "bootstrap": {
+        "mean": 0.020071630965426447,
+        "lower_95": 0.001595507279472829,
+        "upper_95": 0.0427830487997951,
+        "repeats": 1000
+      },
+      "passed": true
+    },
+    "nested_champion": {
+      "candidate": "nested_champion",
+      "macro_ap_gain": 0.008509488678825875,
+      "improved_countries": 5,
+      "worst_country_delta": -0.045634920634920584,
+      "indonesia_delta": 0.0007171051173064935,
+      "macro_f1_delta": 0.015910540077206714,
+      "country_deltas": {
+        "Algeria": 0.004556378285102247,
+        "Angola": -0.045634920634920584,
+        "Indonesia": 0.0007171051173064935,
+        "Iraq": 0.02335893126973243,
+        "Libya": 0.021902087420663463,
+        "Nigeria": 0.0461573506150712
+      },
+      "bootstrap": {
+        "mean": 0.008707966778801325,
+        "lower_95": -0.017986320893848738,
+        "upper_95": 0.03171893512958899,
+        "repeats": 1000
+      },
+      "passed": false
+    }
+  },
+  "global_alpha_diagnostics": [
+    {
+      "alpha": 0.0,
+      "macro_ap": 0.9082319586687913,
+      "gain": 0.0,
+      "improved_countries": 0,
+      "worst_delta": 0.0,
+      "eligible": true
+    },
+    {
+      "alpha": 0.15,
+      "macro_ap": 0.9125479256460783,
+      "gain": 0.004315966977287089,
+      "improved_countries": 5,
+      "worst_delta": 0.0,
+      "eligible": true
+    },
+    {
+      "alpha": 0.3,
+      "macro_ap": 0.9208515076898004,
+      "gain": 0.012619549021009147,
+      "improved_countries": 5,
+      "worst_delta": -0.003851292289965502,
+      "eligible": true
+    },
+    {
+      "alpha": 0.5,
+      "macro_ap": 0.9320922973069713,
+      "gain": 0.023860338638180045,
+      "improved_countries": 5,
+      "worst_delta": -0.0011320507471945795,
+      "eligible": true
+    },
+    {
+      "alpha": 0.7,
+      "macro_ap": 0.9247254974901171,
+      "gain": 0.01649353882132587,
+      "improved_countries": 4,
+      "worst_delta": -0.01986849840514815,
+      "eligible": true
+    }
+  ],
+  "rounds": 300,
+  "pca_components": 12,
+  "seed": 271,
+  "checkpoint": {
+    "protocol": "12-cv-tabular-nested-loco-v1",
+    "cohort_sha256": "fd0a4208bcdbd3ec374e877c63f078479b54fa6b100fe0d842e9cb5b14aa9526",
+    "checkpoint_url": "https://hf.co/torchgeo/resnet18_sentinel2_rgb_moco/resolve/e1c032e7785fd0625224cdb6699aa138bb304eec/resnet18_sentinel2_rgb_moco-e3a335e3.pth",
+    "checkpoint_sha256": "e3a335e38d1d189ad3b0eba4be4004a9c52c5e846317b6737ac9f0fac57e1ac8",
+    "views": [
+      "full_2km",
+      "center_1km"
+    ],
+    "bands": [
+      "B4",
+      "B3",
+      "B2"
+    ],
+    "tta": true,
+    "chip_inventory_sha256": "6ebba3c0bb9fd2463f733426e20c0454c650d1249a7cb77a4d0ba58107ac5d60",
+    "n_sources": 294,
+    "n_features": 1024,
+    "device": "cuda",
+    "torch": "2.10.0+cu128",
+    "checkpoint_path": "/root/.cache/torch/hub/checkpoints/resnet18_sentinel2_rgb_moco-e3a335e3.pth",
+    "embedding_sha256": "44b78d9137b0cebc3f07d6aba2322a0139d402f04c1329fbac84ecc43a74f00b"
+  },
+  "morphology": {
+    "protocol": "12-cv-tabular-nested-loco-v1",
+    "cohort_sha256": "fd0a4208bcdbd3ec374e877c63f078479b54fa6b100fe0d842e9cb5b14aa9526",
+    "chip_inventory_sha256": "6ebba3c0bb9fd2463f733426e20c0454c650d1249a7cb77a4d0ba58107ac5d60",
+    "n_sources": 294,
+    "features": [
+      "morph_blue_center_minus_ring",
+      "morph_blue_center_std",
+      "morph_green_center_minus_ring",
+      "morph_green_center_std",
+      "morph_red_center_minus_ring",
+      "morph_red_center_std",
+      "morph_nir_center_minus_ring",
+      "morph_nir_center_std",
+      "morph_swir16_center_minus_ring",
+      "morph_swir16_center_std",
+      "morph_swir22_center_minus_ring",
+      "morph_swir22_center_std",
+      "morph_ndvi_center_minus_ring",
+      "morph_ndvi_center_std",
+      "morph_ndbi_center_minus_ring",
+      "morph_ndbi_center_std",
+      "morph_mndwi_center_minus_ring",
+      "morph_mndwi_center_std",
+      "morph_bsi_center_minus_ring",
+      "morph_bsi_center_std",
+      "morph_red_gradient_mean",
+      "morph_red_gradient_p90",
+      "morph_nir_gradient_mean",
+      "morph_nir_gradient_p90",
+      "morph_swir16_gradient_mean",
+      "morph_swir16_gradient_p90",
+      "morph_ndvi_gradient_mean",
+      "morph_ndvi_gradient_p90",
+      "morph_ndbi_gradient_mean",
+      "morph_ndbi_gradient_p90",
+      "morph_bsi_gradient_mean",
+      "morph_bsi_gradient_p90",
+      "morph_built_fraction_r10",
+      "morph_built_fraction_r25",
+      "morph_built_fraction_r50",
+      "morph_built_fraction_r100",
+      "morph_built_edge_density",
+      "morph_built_components_per_10k",
+      "morph_largest_built_component_fraction",
+      "morph_high_ndbi_center_fraction",
+      "morph_high_ndvi_center_fraction"
+    ],
+    "sha256": "b873bf53eaf9161f9d4f775bc84af9670a7d7d52124988a921347894e0127719"
+  },
+  "input": {
+    "nb6_counts": {
+      "pending": 301,
+      "ok": 295,
+      "failed": 4
+    },
+    "qa_sources": 294,
+    "qa_country_label_counts": [
+      {
+        "country": "Algeria",
+        "sources": 48,
+        "positives": 15
+      },
+      {
+        "country": "Angola",
+        "sources": 50,
+        "positives": 6
+      },
+      {
+        "country": "Indonesia",
+        "sources": 48,
+        "positives": 17
+      },
+      {
+        "country": "Iraq",
+        "sources": 48,
+        "positives": 18
+      },
+      {
+        "country": "Libya",
+        "sources": 51,
+        "positives": 15
+      },
+      {
+        "country": "Nigeria",
+        "sources": 49,
+        "positives": 16
+      }
+    ],
+    "input_sha256": {
+      "pilot_sources.csv": "e151ebdbed179744c0e8006e7b5fd0e69ce836f7eb7e85f211110bcee2895b80",
+      "image_features.parquet": "ca80e5be75ffe8e01aadef476f8169a87f8bcde17a818af268d42dd4f8695718",
+      "image_quality.csv": "54ea1dc7de4a533db723dbee34ab28458fe955ca40a0980bb9169bb1d079dc79",
+      "run_state.json": "39b0173a27e4f3a26957f4bce288f744e3c44298ee5c8d8ac9f5c9891af5c9a2",
+      "feature_manifest.json": "2d65377574dedce64ebfec85c4152060467ecbfcdc182ac74cd0327e8021a5e6",
+      "features_Algeria_2022_2024.parquet": "03bf7e040c8599835314163f86ba76ee81be3ec0f44a7f063a0a1c66e763acdb",
+      "features_Angola_2022_2024.parquet": "ad2ce182fa780953bdb7f347b50f570ac92d0a7d0f9e8523103e5b5648be0795",
+      "features_Indonesia_2022_2024.parquet": "1654e9692545b8aa5e50b191d0d5203ecaee355b64f62516b6bced8cccb02fe2",
+      "features_Iraq_2022_2024.parquet": "5c524d2af713113e56a32129f2ac3df98edaed3fcfcebdc6824e0b4459efb904",
+      "features_Libya_2022_2024.parquet": "56dc38b49baaee7024643617252ebf2d6d846b071ebea1ea40385807d878fd70",
+      "features_Nigeria_2022_2024.parquet": "179c61731e9a9f43d1f0888af50f9e7fc7ab047824d423318641824f52f889ee"
+    }
+  },
+  "source_sha256": {
+    "kg_08_fusion.py": "08a7a151b296684f775ccb56c33c223f8178b0be8ee54c4a32a56e3c2e41d74a",
+    "kg_12_cv_tabular.py": "590a51ba537e4decd42c059b86290847ae6a8d919b4ef8861667c1215660ab6f"
+  },
+  "model_artifacts": [
+    "12_compact_fallback_0.txt",
+    "12_compact_fallback_1.txt",
+    "12_compact_fallback_2.txt",
+    "12_visual_pu.joblib",
+    "12_fusion_calibration.npz"
+  ],
+  "pilot_threshold": 0.25301907782210276,
+  "threshold_is_deployment_calibrated": false,
+  "limitations": [
+    "The imagery cohort is enriched and has fewer than 300 QA-approved sources.",
+    "EOG supplies gas-flare positives, so unlabelled does not mean non-industrial.",
+    "The frozen encoder uses RGB only; NIR and SWIR enter through morphology features.",
+    "No India imagery or labels were loaded.",
+    "Sources without QA-approved imagery fall back to the compact tabular model."
+  ],
+  "elapsed_minutes": 1.4199122508366904,
+  "python": "3.12.13",
+  "versions": {
+    "numpy": "2.0.2",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "scikit-learn": "1.6.1",
+    "lightgbm": "4.6.0",
+    "torch": "2.10.0+cu128",
+    "pyarrow": "24.0.0",
+    "joblib": "1.5.3"
+  }
+}

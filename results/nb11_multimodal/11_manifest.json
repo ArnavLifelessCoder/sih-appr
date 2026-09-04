@@ -1,0 +1,717 @@
+{
+  "protocol": "11-multimodal-country-loco-v1",
+  "status": "complete",
+  "holdout_country": "India",
+  "holdout_loaded": false,
+  "selection_population": "six foreign countries only",
+  "stage1_selected_branch": "nb8_population",
+  "stage1_guard": {
+    "macro_ap_gain": 0.004505939194671048,
+    "improved_countries": 3,
+    "worst_country_ap_delta": -0.044279757084835614,
+    "minimum_macro_ap_gain": 0.005,
+    "minimum_improved_countries": 4,
+    "maximum_worst_country_ap_drop": 0.03
+  },
+  "stage1": {
+    "manifest_path": "/kaggle/input/notebooks/aaryanadutta/nb8-tab/nb8_domain_revamp/outputs/05e_manifest.json",
+    "prediction_path": "/kaggle/input/notebooks/aaryanadutta/nb8-tab/nb8_domain_revamp/cache/05e_loco_predictions.parquet",
+    "manifest_sha256": "b6a7787b8a009aab6fcd7e53ce008914162db04c67be94418e01fdbb2d0b5877",
+    "prediction_sha256": "b2fe0db0fa13da32b874637569e1e5b279c33877d4708ce7d1244ff250bd9c40",
+    "protocol": "05e-domain-revamp-v1",
+    "n_sources": 1634155,
+    "n_positive": 3506,
+    "original_macro_pr_auc": 0.4599423889081355,
+    "original_macro_f1": 0.44072963111839486,
+    "selected_features": [
+      "active_days_per_year",
+      "active_months_per_year",
+      "conf_modis_mean",
+      "conf_viirs_h_frac",
+      "conf_viirs_l_frac",
+      "conf_viirs_n_frac",
+      "det_per_day",
+      "det_per_year",
+      "dt_mir_lwir_max",
+      "dt_mir_lwir_mean",
+      "dt_mir_lwir_med",
+      "dt_mir_lwir_std",
+      "duty_cycle",
+      "frp_cv",
+      "frp_dens_max",
+      "frp_dens_mean",
+      "frp_dens_med",
+      "frp_dens_std",
+      "frp_max",
+      "frp_mean",
+      "frp_med",
+      "frp_p90",
+      "frp_std",
+      "frp_sum_per_year",
+      "lst_mean",
+      "lst_std",
+      "max_gap_days",
+      "mean_gap_days",
+      "modis_per_year",
+      "n_sensors",
+      "night_frac",
+      "pix_km2_mean",
+      "sat_frac",
+      "snpp_modis_ratio",
+      "snpp_per_year",
+      "span_window_frac",
+      "spread_m",
+      "t_lwir_max",
+      "t_lwir_mean",
+      "t_lwir_med",
+      "t_lwir_std",
+      "t_mir_max",
+      "t_mir_mean",
+      "t_mir_med",
+      "t_mir_std"
+    ],
+    "selected_variant": {
+      "name": "regularized_raw",
+      "schema": "raw",
+      "persistent_train": false
+    },
+    "final_threshold": 0.33140643559612754,
+    "input_sha256": {
+      "features_Iraq_2022_2024.parquet": "5c524d2af713113e56a32129f2ac3df98edaed3fcfcebdc6824e0b4459efb904",
+      "features_Algeria_2022_2024.parquet": "03bf7e040c8599835314163f86ba76ee81be3ec0f44a7f063a0a1c66e763acdb",
+      "features_Nigeria_2022_2024.parquet": "179c61731e9a9f43d1f0888af50f9e7fc7ab047824d423318641824f52f889ee",
+      "features_Libya_2022_2024.parquet": "56dc38b49baaee7024643617252ebf2d6d846b071ebea1ea40385807d878fd70",
+      "features_Angola_2022_2024.parquet": "ad2ce182fa780953bdb7f347b50f570ac92d0a7d0f9e8523103e5b5648be0795",
+      "features_Indonesia_2022_2024.parquet": "1654e9692545b8aa5e50b191d0d5203ecaee355b64f62516b6bced8cccb02fe2"
+    }
+  },
+  "stage1_model_artifacts": [
+    "stage1_nb8/05e_final_model_0.txt",
+    "stage1_nb8/05e_final_model_1.txt",
+    "stage1_nb8/05e_final_model_2.txt"
+  ],
+  "stage2_selected_candidate": "nb9_baseline",
+  "stage2_nested_outer_branch": "nested_champion",
+  "stage2_available_variants": [
+    "nb9_baseline",
+    "temporal_features"
+  ],
+  "stage2_final_selection_diagnostics": [
+    {
+      "branch": "nb9_baseline",
+      "macro_ap": 0.9058505602989816,
+      "ap_gain_vs_baseline": 0.0,
+      "improved_countries": 0,
+      "worst_ap_delta": 0.0,
+      "eligible": true
+    },
+    {
+      "branch": "temporal_features",
+      "macro_ap": 0.9022947703721312,
+      "ap_gain_vs_baseline": -0.0035557899268502946,
+      "improved_countries": 2,
+      "worst_ap_delta": -0.01388888888888895,
+      "eligible": false
+    },
+    {
+      "branch": "rank_blend_nb9_baseline",
+      "macro_ap": 0.8987801669801124,
+      "ap_gain_vs_baseline": -0.00707039331886905,
+      "improved_countries": 2,
+      "worst_ap_delta": -0.03409090909090895,
+      "eligible": false
+    },
+    {
+      "branch": "rank_blend_temporal_features",
+      "macro_ap": 0.8976096201646621,
+      "ap_gain_vs_baseline": -0.008240940134319363,
+      "improved_countries": 3,
+      "worst_ap_delta": -0.04166666666666663,
+      "eligible": false
+    },
+    {
+      "branch": "tcn_only",
+      "macro_ap": 0.8033730939272626,
+      "ap_gain_vs_baseline": -0.10247746637171871,
+      "improved_countries": 0,
+      "worst_ap_delta": -0.21203703703703702,
+      "eligible": false
+    }
+  ],
+  "final_structured_variant": "nb9_baseline",
+  "final_structured_weight": null,
+  "stage2_pilot_threshold": 0.4173697883833596,
+  "threshold_is_deployment_calibrated": false,
+  "guard": {
+    "minimum_macro_ap_gain": 0.005,
+    "minimum_improved_countries": 4,
+    "maximum_worst_country_ap_drop": 0.03
+  },
+  "model_artifacts": [
+    "nb9_baseline_0.txt",
+    "nb9_baseline_1.txt",
+    "nb9_baseline_2.txt"
+  ],
+  "tcn_artifact": {
+    "artifact_path": "10_final_temporal_tcn_bag0.pt",
+    "artifact_paths": [
+      "10_final_temporal_tcn_bag0.pt",
+      "10_final_temporal_tcn_bag1.pt"
+    ],
+    "config_path": "10_final_temporal_tcn.json",
+    "artifact_sha256": "f50984c9dba7990391d628266f8b27c04dd10a89ba77cd03b43eb7be627957fb",
+    "artifact_sha256s": [
+      "f50984c9dba7990391d628266f8b27c04dd10a89ba77cd03b43eb7be627957fb",
+      "96dbf13fc1215ed70409f156a0cafd84590a71c94198fec5a9ee31a43f58c60b"
+    ],
+    "config": {
+      "protocol": "10-temporal-tcn-v1",
+      "holdout": "India",
+      "holdout_loaded": false,
+      "countries": [
+        "Algeria",
+        "Angola",
+        "Indonesia",
+        "Iraq",
+        "Libya",
+        "Nigeria"
+      ],
+      "window_years": [
+        2022,
+        2023,
+        2024
+      ],
+      "channels": [
+        "log_detection_count",
+        "log_active_days",
+        "log_frp_sum",
+        "log_frp_mean",
+        "mir_mean",
+        "mir_lwir_mean",
+        "night_fraction",
+        "saturation_fraction",
+        "modis_fraction",
+        "presence",
+        "month_sin",
+        "month_cos"
+      ],
+      "architecture": {
+        "width": 32,
+        "dilations": [
+          1,
+          2,
+          4,
+          8
+        ],
+        "kernel_size": 3,
+        "dropout": 0.15
+      },
+      "ensemble": "mean_probability",
+      "pu_bags": 2,
+      "unlabeled_keep_fraction": 0.8,
+      "base_seed": 40131,
+      "epochs": 8,
+      "training_source_sha256": "9431a63ee8f39bbc66b56907a5060776fce7558df5e05e99ff5de97fe30d6504",
+      "artifacts": [
+        {
+          "artifact": "10_final_temporal_tcn_bag0.pt",
+          "artifact_sha256": "f50984c9dba7990391d628266f8b27c04dd10a89ba77cd03b43eb7be627957fb",
+          "bag_index": 0,
+          "seed": 40131,
+          "training": {
+            "excluded_countries": [],
+            "train_countries": [
+              "Algeria",
+              "Angola",
+              "Indonesia",
+              "Iraq",
+              "Libya",
+              "Nigeria"
+            ],
+            "training_sources": 11088,
+            "training_positives": 1232,
+            "training_unlabeled": 9856,
+            "seed": 40131,
+            "epochs": 8,
+            "batch_size": 512,
+            "unlabeled_keep_fraction": 0.8,
+            "device": "cuda",
+            "parameter_count": 27873,
+            "sampler": {
+              "policy": "inverse-country-count",
+              "replacement": true,
+              "draws_per_epoch": 11088,
+              "country_source_counts": {
+                "Algeria": 3249,
+                "Angola": 90,
+                "Indonesia": 1656,
+                "Iraq": 1980,
+                "Libya": 1521,
+                "Nigeria": 2592
+              }
+            },
+            "loss": [
+              0.9101203018624717,
+              0.6148497080390072,
+              0.5923653760169664,
+              0.5575342331011746,
+              0.577760332762593,
+              0.5491190188890928,
+              0.518662713908874,
+              0.5387320998857204
+            ],
+            "normalization": {
+              "center": [
+                1.3862943649291992,
+                1.0986123085021973,
+                2.839078426361084,
+                1.6020402908325195,
+                326.06634521484375,
+                29.209991455078125,
+                0.6666666865348816,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.9459102153778076,
+                1.7047481536865234,
+                2.556303024291992,
+                1.4770939350128174,
+                28.840957641601562,
+                16.921329498291016,
+                1.0,
+                0.1864917278289795,
+                0.09677419066429138,
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          }
+        },
+        {
+          "artifact": "10_final_temporal_tcn_bag1.pt",
+          "artifact_sha256": "96dbf13fc1215ed70409f156a0cafd84590a71c94198fec5a9ee31a43f58c60b",
+          "bag_index": 1,
+          "seed": 40232,
+          "training": {
+            "excluded_countries": [],
+            "train_countries": [
+              "Algeria",
+              "Angola",
+              "Indonesia",
+              "Iraq",
+              "Libya",
+              "Nigeria"
+            ],
+            "training_sources": 11088,
+            "training_positives": 1232,
+            "training_unlabeled": 9856,
+            "seed": 40232,
+            "epochs": 8,
+            "batch_size": 512,
+            "unlabeled_keep_fraction": 0.8,
+            "device": "cuda",
+            "parameter_count": 27873,
+            "sampler": {
+              "policy": "inverse-country-count",
+              "replacement": true,
+              "draws_per_epoch": 11088,
+              "country_source_counts": {
+                "Algeria": 3249,
+                "Angola": 90,
+                "Indonesia": 1656,
+                "Iraq": 1980,
+                "Libya": 1521,
+                "Nigeria": 2592
+              }
+            },
+            "loss": [
+              0.8627406216803051,
+              0.6481269776907146,
+              0.5737035467167093,
+              0.5409646822088553,
+              0.5390884990643974,
+              0.5388309098941423,
+              0.5404495565062133,
+              0.5302422837949591
+            ],
+            "normalization": {
+              "center": [
+                1.3862943649291992,
+                1.0986123085021973,
+                2.8367364406585693,
+                1.5871922969818115,
+                325.7785949707031,
+                29.097827911376953,
+                0.671875,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                2.0149030685424805,
+                1.7047481536865234,
+                2.554755687713623,
+                1.4886573553085327,
+                29.018768310546875,
+                16.989505767822266,
+                1.0,
+                0.18394283950328827,
+                0.09166666865348816,
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "params": {
+    "objective": "binary",
+    "learning_rate": 0.03,
+    "num_leaves": 7,
+    "max_depth": 4,
+    "min_data_in_leaf": 10,
+    "feature_fraction": 0.8,
+    "bagging_fraction": 0.8,
+    "bagging_freq": 1,
+    "lambda_l1": 2.0,
+    "lambda_l2": 10.0,
+    "max_bin": 63,
+    "verbose": -1,
+    "num_threads": -1,
+    "force_col_wise": true
+  },
+  "rounds": 300,
+  "tcn_epochs": 8,
+  "negative_ratio": 10,
+  "pu_bags": 2,
+  "tcn_batch_size": 512,
+  "pca_components": 16,
+  "seed": 131,
+  "ssl": {
+    "status": "disabled",
+    "reason": "OptionalSSLUnavailable: Install torchgeo==0.7.1 and timm before extracting SSL embeddings",
+    "weight_name": "SENTINEL2_RGB_MOCO",
+    "weight_url": "https://hf.co/torchgeo/resnet18_sentinel2_rgb_moco/resolve/e1c032e7785fd0625224cdb6699aa138bb304eec/resnet18_sentinel2_rgb_moco-e3a335e3.pth"
+  },
+  "temporal": {
+    "protocol": "10-temporal-tcn-v1",
+    "countries": [
+      "Algeria",
+      "Angola",
+      "Indonesia",
+      "Iraq",
+      "Libya",
+      "Nigeria"
+    ],
+    "holdout": "India",
+    "holdout_loaded": false,
+    "window_years": [
+      2022,
+      2023,
+      2024
+    ],
+    "channels": [
+      "log_detection_count",
+      "log_active_days",
+      "log_frp_sum",
+      "log_frp_mean",
+      "mir_mean",
+      "mir_lwir_mean",
+      "night_fraction",
+      "saturation_fraction",
+      "modis_fraction",
+      "presence",
+      "month_sin",
+      "month_cos"
+    ],
+    "sequence_shape": [
+      12,
+      36
+    ],
+    "negative_ratio": 10,
+    "hard_fraction": 0.5,
+    "seed": 131,
+    "sample_counts": [
+      {
+        "country": "Algeria",
+        "sample_role": "hard_unlabeled",
+        "sources": 1805
+      },
+      {
+        "country": "Algeria",
+        "sample_role": "positive_site",
+        "sources": 361
+      },
+      {
+        "country": "Algeria",
+        "sample_role": "random_unlabeled",
+        "sources": 1805
+      },
+      {
+        "country": "Angola",
+        "sample_role": "hard_unlabeled",
+        "sources": 50
+      },
+      {
+        "country": "Angola",
+        "sample_role": "positive_site",
+        "sources": 10
+      },
+      {
+        "country": "Angola",
+        "sample_role": "random_unlabeled",
+        "sources": 50
+      },
+      {
+        "country": "Indonesia",
+        "sample_role": "hard_unlabeled",
+        "sources": 920
+      },
+      {
+        "country": "Indonesia",
+        "sample_role": "positive_site",
+        "sources": 184
+      },
+      {
+        "country": "Indonesia",
+        "sample_role": "random_unlabeled",
+        "sources": 920
+      },
+      {
+        "country": "Iraq",
+        "sample_role": "hard_unlabeled",
+        "sources": 1100
+      },
+      {
+        "country": "Iraq",
+        "sample_role": "positive_site",
+        "sources": 220
+      },
+      {
+        "country": "Iraq",
+        "sample_role": "random_unlabeled",
+        "sources": 1100
+      },
+      {
+        "country": "Libya",
+        "sample_role": "hard_unlabeled",
+        "sources": 845
+      },
+      {
+        "country": "Libya",
+        "sample_role": "positive_site",
+        "sources": 169
+      },
+      {
+        "country": "Libya",
+        "sample_role": "random_unlabeled",
+        "sources": 845
+      },
+      {
+        "country": "Nigeria",
+        "sample_role": "hard_unlabeled",
+        "sources": 1440
+      },
+      {
+        "country": "Nigeria",
+        "sample_role": "positive_site",
+        "sources": 288
+      },
+      {
+        "country": "Nigeria",
+        "sample_role": "random_unlabeled",
+        "sources": 1440
+      }
+    ],
+    "sampling_diagnostics": [
+      {
+        "country": "Algeria",
+        "known_positive_sources": 1039,
+        "unique_positive_sites": 361,
+        "available_unlabeled_before_block_guard": 9124,
+        "positive_block_unlabeled_excluded": 1235,
+        "available_unlabeled_after_block_guard": 7889,
+        "selected_hard_unlabeled": 1805,
+        "selected_random_unlabeled": 1805
+      },
+      {
+        "country": "Angola",
+        "known_positive_sources": 32,
+        "unique_positive_sites": 10,
+        "available_unlabeled_before_block_guard": 970221,
+        "positive_block_unlabeled_excluded": 253,
+        "available_unlabeled_after_block_guard": 969968,
+        "selected_hard_unlabeled": 50,
+        "selected_random_unlabeled": 50
+      },
+      {
+        "country": "Indonesia",
+        "known_positive_sources": 376,
+        "unique_positive_sites": 184,
+        "available_unlabeled_before_block_guard": 183182,
+        "positive_block_unlabeled_excluded": 1151,
+        "available_unlabeled_after_block_guard": 182031,
+        "selected_hard_unlabeled": 920,
+        "selected_random_unlabeled": 920
+      },
+      {
+        "country": "Iraq",
+        "known_positive_sources": 741,
+        "unique_positive_sites": 220,
+        "available_unlabeled_before_block_guard": 29857,
+        "positive_block_unlabeled_excluded": 2592,
+        "available_unlabeled_after_block_guard": 27265,
+        "selected_hard_unlabeled": 1100,
+        "selected_random_unlabeled": 1100
+      },
+      {
+        "country": "Libya",
+        "known_positive_sources": 546,
+        "unique_positive_sites": 169,
+        "available_unlabeled_before_block_guard": 2150,
+        "positive_block_unlabeled_excluded": 356,
+        "available_unlabeled_after_block_guard": 1794,
+        "selected_hard_unlabeled": 845,
+        "selected_random_unlabeled": 845
+      },
+      {
+        "country": "Nigeria",
+        "known_positive_sources": 772,
+        "unique_positive_sites": 288,
+        "available_unlabeled_before_block_guard": 436115,
+        "positive_block_unlabeled_excluded": 5118,
+        "available_unlabeled_after_block_guard": 430997,
+        "selected_hard_unlabeled": 1440,
+        "selected_random_unlabeled": 1440
+      }
+    ],
+    "training_sources": 13552,
+    "cohort_sources": 294,
+    "population_included": true,
+    "aligned_sources": 1634155,
+    "cohort_sha256": "d8794a05ee2b725788962314c283d6c237bee034be8b31ea507274971d86bb46",
+    "input_paths": {
+      "features_Algeria_2022_2024.parquet": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/features_Algeria_2022_2024.parquet",
+      "features_Angola_2022_2024.parquet": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/features_Angola_2022_2024.parquet",
+      "features_Indonesia_2022_2024.parquet": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/features_Indonesia_2022_2024.parquet",
+      "features_Iraq_2022_2024.parquet": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/features_Iraq_2022_2024.parquet",
+      "features_Libya_2022_2024.parquet": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/features_Libya_2022_2024.parquet",
+      "features_Nigeria_2022_2024.parquet": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/features_Nigeria_2022_2024.parquet",
+      "detections_Algeria.parquet": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/detections_Algeria.parquet",
+      "detections_Angola.parquet": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/detections_Angola.parquet",
+      "detections_Indonesia.parquet": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/detections_Indonesia.parquet",
+      "detections_Iraq.parquet": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/detections_Iraq.parquet",
+      "detections_Libya.parquet": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/detections_Libya.parquet",
+      "detections_Nigeria.parquet": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/detections_Nigeria.parquet"
+    },
+    "ignored_identical_duplicates": {
+      "features_Algeria_2022_2024.parquet": [],
+      "features_Angola_2022_2024.parquet": [],
+      "features_Indonesia_2022_2024.parquet": [],
+      "features_Iraq_2022_2024.parquet": [],
+      "features_Libya_2022_2024.parquet": [],
+      "features_Nigeria_2022_2024.parquet": [],
+      "detections_Algeria.parquet": [],
+      "detections_Angola.parquet": [],
+      "detections_Indonesia.parquet": [],
+      "detections_Iraq.parquet": [],
+      "detections_Libya.parquet": [],
+      "detections_Nigeria.parquet": []
+    },
+    "input_sha256": {
+      "features_Algeria_2022_2024.parquet": "03bf7e040c8599835314163f86ba76ee81be3ec0f44a7f063a0a1c66e763acdb",
+      "features_Angola_2022_2024.parquet": "ad2ce182fa780953bdb7f347b50f570ac92d0a7d0f9e8523103e5b5648be0795",
+      "features_Indonesia_2022_2024.parquet": "1654e9692545b8aa5e50b191d0d5203ecaee355b64f62516b6bced8cccb02fe2",
+      "features_Iraq_2022_2024.parquet": "5c524d2af713113e56a32129f2ac3df98edaed3fcfcebdc6824e0b4459efb904",
+      "features_Libya_2022_2024.parquet": "56dc38b49baaee7024643617252ebf2d6d846b071ebea1ea40385807d878fd70",
+      "features_Nigeria_2022_2024.parquet": "179c61731e9a9f43d1f0888af50f9e7fc7ab047824d423318641824f52f889ee",
+      "detections_Algeria.parquet": "94ba1af6f97a8162af6bb4aab58f1d23e6eb38199e050d3c79819effdf8e647e",
+      "detections_Angola.parquet": "fcc3e660e2c93aec92735b9fc388d3533b8bbd5c1dc9b3049af3290aac9b7ae4",
+      "detections_Indonesia.parquet": "178548205a8439ea1ea51b7393f700598873dc3226faaccf70e90a0eec8ff265",
+      "detections_Iraq.parquet": "d4ae7d9a5c2b348e35ebb15793f213f647d11f458dee55c399a1c70e2bad4ec2",
+      "detections_Libya.parquet": "cc94609359a0f803991b28f8e5ca659d8d49f9c31cf674317bb6e3e970d1283e",
+      "detections_Nigeria.parquet": "9e2406e6f4077b9c7179787afcd85a21b4d84221f5c8e6b65dbc365be5e3fbaf"
+    }
+  },
+  "nb9": {
+    "nb6_counts": {
+      "pending": 301,
+      "ok": 295,
+      "failed": 4
+    },
+    "qa_sources": 294,
+    "qa_country_label_counts": [
+      {
+        "country": "Algeria",
+        "sources": 48,
+        "positives": 15
+      },
+      {
+        "country": "Angola",
+        "sources": 50,
+        "positives": 6
+      },
+      {
+        "country": "Indonesia",
+        "sources": 48,
+        "positives": 17
+      },
+      {
+        "country": "Iraq",
+        "sources": 48,
+        "positives": 18
+      },
+      {
+        "country": "Libya",
+        "sources": 51,
+        "positives": 15
+      },
+      {
+        "country": "Nigeria",
+        "sources": 49,
+        "positives": 16
+      }
+    ],
+    "input_sha256": {
+      "pilot_sources.csv": "e151ebdbed179744c0e8006e7b5fd0e69ce836f7eb7e85f211110bcee2895b80",
+      "image_features.parquet": "ca80e5be75ffe8e01aadef476f8169a87f8bcde17a818af268d42dd4f8695718",
+      "image_quality.csv": "54ea1dc7de4a533db723dbee34ab28458fe955ca40a0980bb9169bb1d079dc79",
+      "run_state.json": "39b0173a27e4f3a26957f4bce288f744e3c44298ee5c8d8ac9f5c9891af5c9a2",
+      "feature_manifest.json": "2d65377574dedce64ebfec85c4152060467ecbfcdc182ac74cd0327e8021a5e6",
+      "features_Algeria_2022_2024.parquet": "03bf7e040c8599835314163f86ba76ee81be3ec0f44a7f063a0a1c66e763acdb",
+      "features_Angola_2022_2024.parquet": "ad2ce182fa780953bdb7f347b50f570ac92d0a7d0f9e8523103e5b5648be0795",
+      "features_Indonesia_2022_2024.parquet": "1654e9692545b8aa5e50b191d0d5203ecaee355b64f62516b6bced8cccb02fe2",
+      "features_Iraq_2022_2024.parquet": "5c524d2af713113e56a32129f2ac3df98edaed3fcfcebdc6824e0b4459efb904",
+      "features_Libya_2022_2024.parquet": "56dc38b49baaee7024643617252ebf2d6d846b071ebea1ea40385807d878fd70",
+      "features_Nigeria_2022_2024.parquet": "179c61731e9a9f43d1f0888af50f9e7fc7ab047824d423318641824f52f889ee"
+    }
+  },
+  "limitations": [
+    "Stage B imagery is an enriched foreign pilot and does not estimate population precision.",
+    "India imagery is unavailable, so India inference remains Stage A only.",
+    "Unmatched sources are positive-unlabeled examples, not verified negatives.",
+    "The Stage B pilot threshold is not a deployment threshold."
+  ],
+  "elapsed_minutes": 3.7823665539423623,
+  "python": "3.12.13",
+  "versions": {
+    "numpy": "2.0.2",
+    "pandas": "2.3.3",
+    "lightgbm": "4.6.0",
+    "scikit-learn": "1.6.1",
+    "pyarrow": "24.0.0",
+    "torch": "2.10.0+cu128",
+    "torchgeo": "0.7.1",
+    "timm": "1.0.26"
+  }
+}

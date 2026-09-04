@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "seed": 42,
+  "countries": [
+    "Algeria",
+    "Angola",
+    "Indonesia",
+    "Iraq",
+    "Libya",
+    "Nigeria"
+  ],
+  "sentinel_collection": "sentinel-2-c1-l2a",
+  "bands": [
+    "blue",
+    "green",
+    "red",
+    "nir",
+    "swir16",
+    "swir22"
+  ],
+  "shape": [
+    6,
+    200,
+    200
+  ],
+  "pixel_m": 10,
+  "dates": "2022-01-01T00:00:00Z/2024-12-31T23:59:59Z",
+  "max_scenes": 8,
+  "minimum_clear_fraction": 0.8,
+  "clear_scl_classes": [
+    4,
+    5,
+    6
+  ],
+  "holdout_loaded": false,
+  "purpose": "download and alignment pilot, not a training/evaluation dataset",
+  "sample_sha256": "db1223c8b974760ef0ea75f6e0e27d6ff0157b1cc7373cf086143ce196df4410",
+  "input_files": {
+    "Algeria": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/features_Algeria_2022_2024.parquet",
+    "Angola": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/features_Angola_2022_2024.parquet",
+    "Indonesia": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/features_Indonesia_2022_2024.parquet",
+    "Iraq": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/features_Iraq_2022_2024.parquet",
+    "Libya": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/features_Libya_2022_2024.parquet",
+    "Nigeria": "/kaggle/input/notebooks/aaryanadutta/sih-nb2/cache/features_Nigeria_2022_2024.parquet"
+  },
+  "versions": {
+    "rasterio": "1.4.4",
+    "numpy": "2.0.2",
+    "pandas": "2.3.3",
+    "requests": "2.32.4"
+  }
+}

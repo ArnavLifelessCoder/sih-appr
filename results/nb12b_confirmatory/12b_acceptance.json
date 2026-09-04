@@ -1,0 +1,134 @@
+{
+  "protocol": "12b-guarded-confirmatory-ensemble-v1",
+  "eligible_challenger": "guarded_cv_tabular",
+  "baseline": "compact_tabular",
+  "diagnostic_only": [
+    "all77_tabular",
+    "nested_champion"
+  ],
+  "conditions": [
+    {
+      "name": "integrity_valid",
+      "observed": true,
+      "rule": "must be true",
+      "passed": true
+    },
+    {
+      "name": "ensemble_macro_pr_auc_gain",
+      "observed": 0.02393213904047814,
+      "rule": ">= 0.01",
+      "passed": true
+    },
+    {
+      "name": "ensemble_improved_countries",
+      "observed": 5,
+      "rule": ">= 4",
+      "passed": true
+    },
+    {
+      "name": "ensemble_worst_country_pr_auc_delta",
+      "observed": -0.005053619374645657,
+      "rule": ">= -0.02",
+      "passed": true
+    },
+    {
+      "name": "ensemble_indonesia_pr_auc_delta",
+      "observed": -0.005053619374645657,
+      "rule": ">= -0.02",
+      "passed": true
+    },
+    {
+      "name": "ensemble_macro_f1_delta",
+      "observed": 0.04974398675895064,
+      "rule": ">= -0.01",
+      "passed": true
+    },
+    {
+      "name": "bootstrap_lower_95",
+      "observed": -0.0006320470639897942,
+      "rule": ">= -0.01",
+      "passed": true
+    },
+    {
+      "name": "macro_recall_at_20_delta",
+      "observed": -0.011111111111111108,
+      "rule": ">= -0.02",
+      "passed": true
+    },
+    {
+      "name": "worst_positive_count_loss_at_20",
+      "observed": -1,
+      "rule": ">= -1",
+      "passed": true
+    },
+    {
+      "name": "all_seed_macro_pr_auc_gains_positive",
+      "observed": [
+        0.023412966404757984,
+        0.022841996574667678,
+        0.021805989018993666
+      ],
+      "rule": "> 0 for every fresh seed",
+      "passed": true
+    },
+    {
+      "name": "median_seed_macro_pr_auc_gain",
+      "observed": 0.022841996574667678,
+      "rule": ">= 0.01",
+      "passed": true
+    },
+    {
+      "name": "nonzero_full_foreign_seed_alphas",
+      "observed": 3,
+      "rule": ">= 2",
+      "passed": true
+    }
+  ],
+  "bootstrap": {
+    "mean": 0.023764359479877407,
+    "lower_95": -0.0006320470639897942,
+    "upper_95": 0.05150185832307637,
+    "repeats": 5000,
+    "method": "positive-stratified 10 km block bootstrap within country",
+    "seed": 12012
+  },
+  "full_foreign_seed_alphas": {
+    "272": 0.5,
+    "273": 0.5,
+    "274": 0.5
+  },
+  "country_pr_auc_deltas": {
+    "Algeria": 0.015021902289123923,
+    "Angola": 0.04166666666666674,
+    "Indonesia": -0.005053619374645657,
+    "Iraq": 0.030988013207005505,
+    "Libya": 0.015226305424627329,
+    "Nigeria": 0.045743566030091
+  },
+  "country_recall_at_20_deltas": {
+    "Algeria": 0.0,
+    "Angola": 0.0,
+    "Indonesia": 0.0,
+    "Iraq": 0.0,
+    "Libya": -0.06666666666666665,
+    "Nigeria": 0.0
+  },
+  "country_positive_count_at_20_deltas": {
+    "Algeria": 0,
+    "Angola": 0,
+    "Indonesia": 0,
+    "Iraq": 0,
+    "Libya": -1,
+    "Nigeria": 0
+  },
+  "passed_all_conditions": true,
+  "deployment_alpha_grid": [
+    0.0,
+    0.15,
+    0.3,
+    0.5,
+    0.7
+  ],
+  "passed": true,
+  "final_decision": "guarded_cv_tabular"
+}
