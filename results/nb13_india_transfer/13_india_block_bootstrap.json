@@ -1,0 +1,9 @@
+{
+  "metric": "EOG-proxy PR-AUC difference, guarded minus compact",
+  "mean": 0.023173147518759662,
+  "lower_95": -0.013598237484929904,
+  "upper_95": 0.0610582676904109,
+  "repeats": 2000,
+  "seed": 13014,
+  "resampling_unit": "10 km block, stratified by EOG-positive status"
+}

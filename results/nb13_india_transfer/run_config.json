@@ -1,0 +1,38 @@
+{
+  "protocol": "13-india-guarded-transfer-v1",
+  "purpose": "frozen NB12b India transfer ranking on an EOG-enriched panel",
+  "country": "India",
+  "years": [
+    2022,
+    2023,
+    2024
+  ],
+  "seed": 13013,
+  "n_sources": 300,
+  "positive_site_quota": 96,
+  "actual_positive_sites": 72,
+  "sample_is_eog_enriched": true,
+  "unmatched_means_unlabelled": true,
+  "model_fitting": false,
+  "threshold_selection": false,
+  "sentinel_collection": "sentinel-2-c1-l2a",
+  "dates": "2022-01-01T00:00:00Z/2024-12-31T23:59:59Z",
+  "bands": [
+    "blue",
+    "green",
+    "red",
+    "nir",
+    "swir16",
+    "swir22"
+  ],
+  "shape": [
+    6,
+    200,
+    200
+  ],
+  "pixel_m": 10,
+  "minimum_clear_fraction": 0.8,
+  "max_scenes": 8,
+  "feature_input_sha256": "c2b3bf287a82ad75652d5ab23adeaf533ba98ee38ece8f4070d07e0a1f8687ff",
+  "panel_sha256": "06871b54022f5738f5f9467ce87bf436d7c85e6b8ecf289d78a8707d23113051"
+}

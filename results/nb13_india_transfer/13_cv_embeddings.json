@@ -1,0 +1,23 @@
+{
+  "protocol": "12-cv-tabular-nested-loco-v1",
+  "cohort_sha256": "db269e8ab0099e17cb0a47914a70a628eff41b69da9b14ee78e46cfdb0321fac",
+  "checkpoint_url": "https://hf.co/torchgeo/resnet18_sentinel2_rgb_moco/resolve/e1c032e7785fd0625224cdb6699aa138bb304eec/resnet18_sentinel2_rgb_moco-e3a335e3.pth",
+  "checkpoint_sha256": "e3a335e38d1d189ad3b0eba4be4004a9c52c5e846317b6737ac9f0fac57e1ac8",
+  "views": [
+    "full_2km",
+    "center_1km"
+  ],
+  "bands": [
+    "B4",
+    "B3",
+    "B2"
+  ],
+  "tta": true,
+  "chip_inventory_sha256": "6ac7a2a67c4ac09f91559f2ed64e9bdce932ae5f1a62ace1fbeb6191ceeb2e74",
+  "n_sources": 299,
+  "n_features": 1024,
+  "device": "cuda",
+  "torch": "2.10.0+cu128",
+  "checkpoint_path": "/root/.cache/torch/hub/checkpoints/resnet18_sentinel2_rgb_moco-e3a335e3.pth",
+  "embedding_sha256": "2fa1b4a839a22152d91fc17c10aeab014fb994b3713eeb3b1b7e457e8dd4c5fa"
+}

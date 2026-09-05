@@ -13,12 +13,12 @@ in `../docs/runs/`.
 | `kaggle/11_cv_ts_cascade.ipynb` | Tabular, temporal-descriptor, and TCN cascade | completed, TCN rejected |
 | `kaggle/12_cv_tabular.ipynb` | CV plus tabular discovery experiment | completed |
 | `kaggle/12b_guarded_confirmation.ipynb` | Fresh-seed confirmation and final artifact packaging | completed, frozen final branch |
-| `kaggle/13_india_guarded_transfer.ipynb` | Frozen NB12b ranking transfer on a bounded India image panel | ready to run |
+| `kaggle/13_india_guarded_transfer.ipynb` | Frozen NB12b ranking transfer on a bounded India image panel | completed, 299 of 300 scored |
 
 Stages 05b, 05c, and 05d are represented by their source modules and exact runbooks rather
-than separate clean notebook exports. The historical India run is implemented by
-`../kaggle/kg_09_final_india.py`; its retained metrics are under
-`../results/nb10_india_historical/`.
+than separate clean notebook exports. Historical NB10 metrics are retained under
+`../results/nb10_india_historical/`. Do not confuse its NB8 three-model run with
+`../kaggle/kg_09_final_india.py`, an older NB5-based implementation.
 
 The final-model India transfer notebook is Stage 13. It deliberately reports ranking and
 fixed review-budget metrics rather than retuning a threshold on India.

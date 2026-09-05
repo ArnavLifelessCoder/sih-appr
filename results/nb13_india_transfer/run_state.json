@@ -1,0 +1,18 @@
+{
+  "protocol": "13-india-guarded-transfer-v1",
+  "counts": {
+    "ok": 299,
+    "failed": 1
+  },
+  "new_attempts": 100,
+  "elapsed_minutes": 34.15,
+  "stop_reason": "all eligible sources processed",
+  "panel_complete": true,
+  "model_fitting": false,
+  "versions": {
+    "numpy": "2.0.2",
+    "pandas": "2.3.3",
+    "requests": "2.32.4",
+    "pyproj": "3.7.2"
+  }
+}

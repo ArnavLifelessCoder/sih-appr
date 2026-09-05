@@ -5,7 +5,7 @@ ensemble without retaining the large imagery-chip directory.
 
 ## Inventory
 
-- Nine LightGBM text models: three folds for each confirmation seed 272, 273, and 274.
+- Nine LightGBM text models: three full-foreign models per confirmation seed 272, 273, and 274.
 - Three visual positive-unlabelled models, one per confirmation seed.
 - One fusion calibration archive containing the selected per-seed blending state.
 - Cached CV embeddings and morphology tables plus their metadata.

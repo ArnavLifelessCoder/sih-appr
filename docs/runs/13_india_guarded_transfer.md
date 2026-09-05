@@ -1,12 +1,19 @@
 # NB13: frozen NB12b India transfer evaluation
 
-NB13 is the next-stage evaluation of the frozen `guarded_cv_tabular` ensemble.
-It does not train or select anything on India. It verifies the committed NB12b
+NB13 is the completed India evaluation of the frozen `guarded_cv_tabular` ensemble.
+It does not fit models, features, thresholds, or fusion weights on India. It verifies the committed NB12b
 model hashes, preserves the saved feature order and calibration references, and
 compares the final guarded score with the compact early-fusion baseline.
 
 India was already evaluated by the superseded NB8 model. NB13 is therefore a
 final-model transfer audit, not a first untouched project holdout.
+
+Completed across three acquisition batches: 300 fixed sources, 299 successful images,
+one terminal failure, and 72 scored EOG-positive sites. Guarded PR-AUC was 0.8022
+versus compact 0.7788, with a paired gain interval of [-0.0136, 0.0611]. The
+prewritten guard retained guarded fusion. This is an India-informed branch decision,
+not an independent evaluation of the policy selected using that decision.
+See [retained evidence](../../results/nb13_india_transfer/README.md).
 
 ## Why the evaluation uses a panel
 
@@ -55,6 +62,7 @@ If the last cell reports pending chips:
 5. Run all cells again.
 
 The second and third versions reuse verified chips before making new requests.
+Attach the full saved Kaggle output, not only its compact results ZIP, which omits chips.
 Do not attach two earlier NB13 versions at once. A fourth version may be needed
 only if a time limit stops a batch before 100 attempts.
 
@@ -92,5 +100,6 @@ below compact and it reduces positive-site recovery at the 20 percent review
 budget by no more than one site. If it violates either guard, use the compact
 score for India and retain guarded fusion only for the foreign-country evidence.
 
-This rule is written before NB13 results are available. Do not change it after
-seeing India scores.
+This rule was written before NB13 results were available and passed on the completed
+panel. Do not change it after seeing India scores. Independent future evaluation is
+needed to assess the selected policy without reusing this branch-selection evidence.

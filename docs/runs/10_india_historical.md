@@ -12,9 +12,10 @@ on India and must not be described as an evaluation of the final guarded model.
    `05e_final_model_*.txt` files.
 3. The original EOG workbook for India-side evaluation only.
 
-The implementation is `kaggle/kg_09_final_india.py`. It rebuilds India on the same
-2022-2024 window, applies the three frozen NB8 models and the threshold selected from
-foreign-country OOF predictions, and performs no fitting or tuning on India.
+The recorded run rebuilt India on the 2022-2024 window and applied three frozen
+NB8 models with the foreign OOF threshold. The retained manifest is the authority
+for this historical run. `kaggle/kg_09_final_india.py` is an older NB5-based
+implementation, not an exact reproduction of this NB8 three-model execution.
 
 ## Completed result
 
@@ -31,6 +32,7 @@ The exact evidence is retained in `results/nb10_india_historical/`:
 - `09_india_site_metrics.csv`
 - `09_manifest.json`
 
-The 22 MB row-level prediction table and notebook log remain outside Git. The final
-NB12b guarded model has not been evaluated on India, but this completed historical run
-means India is no longer a pristine project-level holdout.
+The 22 MB row-level prediction table and notebook log remain outside Git. This run
+means India is no longer a pristine project-level holdout. The final NB12b model
+was subsequently evaluated on a different, enriched image panel in
+[NB13](13_india_guarded_transfer.md). Its metrics are not directly comparable here.

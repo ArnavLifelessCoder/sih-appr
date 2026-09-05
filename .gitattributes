@@ -11,3 +11,7 @@ artifacts/nb12b/cache/*.json text eol=lf
 artifacts/nb12b/final_models/*.txt text eol=lf
 results/nb12b_confirmatory/*.csv text eol=lf
 results/nb12b_confirmatory/*.json text eol=lf
+
+# Preserve the native bytes of India evidence for its SHA-256 manifest.
+results/nb13_india_transfer/*.json -text
+results/nb13_india_transfer/*.csv -text

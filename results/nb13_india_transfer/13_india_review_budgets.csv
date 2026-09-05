@@ -1,0 +1,7 @@
+branch,review_fraction,reviewed_sources,positive_rows_found,positive_row_recall,positive_sites_found,positive_site_recall
+compact_tabular,0.1,30,27,0.375,27,0.375
+compact_tabular,0.2,60,45,0.625,45,0.625
+compact_tabular,0.3,90,54,0.75,54,0.75
+guarded_cv_tabular,0.1,30,30,0.4166666666666667,30,0.4166666666666667
+guarded_cv_tabular,0.2,60,47,0.6527777777777778,47,0.6527777777777778
+guarded_cv_tabular,0.3,90,52,0.7222222222222222,52,0.7222222222222222

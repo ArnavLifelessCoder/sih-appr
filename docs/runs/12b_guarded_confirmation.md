@@ -78,11 +78,14 @@ If guarded passes, deployment averages the nine compact model probabilities and
 the three visual pipelines. Within each seed, it first averages that seed's three
 compact models, applies that seed's OOF calibration and selected alpha with its
 visual model, then averages the three fused pipeline scores. This matches the
-procedure evaluated by the three-seed outer predictions. Missing imagery uses
-the mean calibrated compact pipeline score. If guarded fails, deployment uses
+procedure evaluated by the three-seed outer predictions. An unavailable visual residual
+uses the mean calibrated compact pipeline score, but the compact model itself still
+requires image summary features. This is not a validated image-free fallback.
+If guarded fails, deployment uses
 the raw nine-model compact ensemble only.
 
 This run measures algorithmic seed stability on the same enriched 294-source
 foreign cohort. It is not an independent country test, an India result, or a
 population precision estimate. A historical India result exists for the superseded
-NB8 model, but the final NB12b guarded model has not been evaluated on India.
+NB8 model. The subsequent [NB13 transfer audit](13_india_guarded_transfer.md)
+evaluated the frozen NB12b ensemble on 299 QA-approved India sources.

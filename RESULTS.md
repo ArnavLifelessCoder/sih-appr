@@ -1,6 +1,6 @@
 # SIH26162 results
 
-Last updated: 2026-09-04
+Last updated: 2026-09-05
 
 ## Final decision
 
@@ -160,10 +160,72 @@ superseded NB8 `regularized_raw` model before the later NB12 and NB12b work.
 Of 187 active EOG sites in that run, 97 were recoverable after candidate construction and
 49 were detected. Recall was 50.5% of recoverable sites and 26.2% of all active sites.
 
-The final NB12b model has not been evaluated on India. India remained absent from NB12
-and NB12b training, feature selection, thresholding, fusion-weight selection, and seed
-confirmation. Any future NB12b India result must be described as a final-model transfer
-evaluation, not as a first untouched test.
+India remained absent from NB12 and NB12b training, feature selection, thresholding,
+fusion-weight selection, and seed confirmation. The completed NB13 result below is
+a final-model transfer evaluation. The previous NB10 exposure still means this is not
+a first untouched project test.
+
+## Completed NB13 India transfer evaluation
+
+The panel was fixed before acquisition using seed 13013. It contains 300 distinct
+sources in 300 distinct 10 km blocks: 72 EOG-positive sites and 228 unlabelled sources.
+The positive quota was at most 96; deduplication by site and block left 72 selected
+positive sites. These 72 are a sampled panel denominator, not all recoverable sites
+or all active EOG sites in India.
+
+Three bounded runs attempted 100 images each. The second reused 100 chips and the
+third reused 200. Final status was 299 successful, one failed, and zero pending.
+The failed unlabelled source, `India_623527`, had insufficient clear coverage in all
+eight candidate scenes. All 72 positive sites remained in evaluation. No accepted
+image was removed by the reflectance-tail QA rule.
+
+| Metric on the same 299 India sources | Compact baseline | Guarded CV plus tabular |
+|---|---:|---:|
+| EOG-proxy PR-AUC | 0.7788 | **0.8022** |
+| EOG-proxy ROC-AUC | 0.8650 | **0.8814** |
+| Top 30: known sites found | 27 / 72 | **30 / 72** |
+| Top 60: known sites found | 45 / 72 | **47 / 72** |
+| Top 90: known sites found | **54 / 72** | 52 / 72 |
+| Top 60: known-site recall | 62.50% | **65.28%** |
+
+Observation: the frozen guarded ensemble gained 0.0234179 PR-AUC and 0.0163363
+ROC-AUC. It found three additional known sites in the first 30 reviews and two
+additional sites in the first 60, but two fewer sites in the first 90.
+
+Observation: a paired bootstrap with 2,000 positive-stratified 10 km block resamples
+(seed 13014) estimated a mean PR-AUC difference of 0.02317 and a 95% interval of
+-0.01360 to 0.06106. The interval includes zero.
+
+Interpretation: the guarded branch passed the India-specific rule committed before
+the run: PR-AUC difference at least -0.01 and at most one lost positive site in the
+top 20% review budget. The result supports retaining guarded ranking under that
+rule. It does not establish a statistically significant positive gain. This India
+rule differs from the 12-condition foreign confirmation guard; the bootstrap interval
+was reported but was not an India acceptance condition.
+
+No models, scalers, PCA, calibration references, alphas, or thresholds were fitted
+on India. The stored decision does use India evaluation metrics to choose between
+the two frozen branches for subsequent India ranking, so this selected policy still
+needs independent validation. No F1 was reported because NB12b's pilot threshold is
+explicitly not deployment-calibrated.
+
+The India panel is EOG-enriched (72/299 scored rows, 24.08%). Its nominal precision
+and PR-AUC cannot be treated as full-population performance. The top-30 result does
+not establish 100% precision across India. Unmatched rows remain unlabelled, and this
+panel cannot establish kiln, cement, steel, or other industrial-category accuracy.
+Neither NB10's full-population scores nor Solution 2 can be ranked against NB13
+without an equivalent test cohort and protocol.
+
+Verification: all ten output hashes in `13_manifest.json` matched the retained
+files. Predictions contain 299 unique sources and blocks, and finite scores between
+zero and one. PR-AUC, ROC-AUC, and all review-budget counts were independently
+recomputed. The panel configuration matches the 200-image batch, and the model
+manifest and schema hashes match the frozen repository artifacts.
+
+Evidence: [NB13 registry](results/nb13_india_transfer/README.md),
+[ranking metrics](results/nb13_india_transfer/13_india_ranking_metrics.csv),
+[review budgets](results/nb13_india_transfer/13_india_review_budgets.csv), and
+[decision](results/nb13_india_transfer/13_india_decision.json).
 
 ## Limitations
 
@@ -178,6 +240,8 @@ evaluation, not as a first untouched test.
 5. Candidate construction limits site recall, especially in Angola and Indonesia.
 6. Facility catalogues are incomplete. Absence from a catalogue is not proof that a
    high-scoring source is a false positive.
+7. NB13 adds one country transfer panel, not a representative India population test.
+   Its confidence interval also crosses zero, and the final branch choice used this panel.
 
 ## Frozen artifacts and next work
 
@@ -188,13 +252,15 @@ input hashes, output hashes, and all 12 acceptance checks.
 
 The highest-value next steps are:
 
-1. Run the prepared NB13 notebook on its fixed 300-source India imagery panel. The code
-   applies NB12b without retraining or threshold tuning and reports ranking plus fixed
-   review-budget metrics. No NB13 result exists until that Kaggle run completes.
-2. Build a population-scale review queue and estimate precision with spatially stratified
-   manual review.
-3. Separate flare, kiln, cement, steel, crop-burning, and wildfire errors using independent
-   validation sources.
-4. Improve candidate coverage before claiming facility-level recall.
+1. Preserve NB12b and the completed NB13 result as frozen evidence. Any model changes
+   belong to a new experiment with an independently reserved evaluation cohort.
+2. Define a practical population screening stage before requesting imagery at scale.
+   The final compact model already needs imagery and cannot serve as a thermal-only
+   fallback for hundreds of thousands of candidates with no images.
+3. Estimate precision from a separate spatially sampled manual review set, including
+   flare, kiln, cement, steel, crop-burning, and wildfire categories.
+4. Collect the missing NOAA-20 coverage for Angola and Indonesia before testing a
+   three-sensor variant under new country-held-out validation. Keep it excluded now.
+5. Improve candidate coverage and audit unmatched facilities before claiming site recall.
 
 The evidence registry in `results/README.md` maps each stage to its retained files.

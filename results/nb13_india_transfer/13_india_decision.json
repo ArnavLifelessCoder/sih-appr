@@ -1,0 +1,13 @@
+{
+  "protocol": "13-india-guarded-transfer-v1",
+  "rule_written_before_results": true,
+  "eog_proxy_pr_auc_delta_guarded_minus_compact": 0.023417901901583105,
+  "positive_sites_at_20_delta_guarded_minus_compact": 2,
+  "conditions": {
+    "pr_auc_delta_at_least_minus_0_01": true,
+    "positive_site_loss_at_20_no_more_than_one": true
+  },
+  "passed": true,
+  "india_ranking_branch": "guarded_cv_tabular",
+  "interpretation": "Panel ranking decision only; not population precision or a deployment threshold"
+}

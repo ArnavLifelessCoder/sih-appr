@@ -20,12 +20,14 @@ are kept unchanged so every claim can be traced back to its native run artifact.
 | `nb11_multimodal/` | temporal and cascade study | branch, gate, country, and TCN diagnostics |
 | `nb12_cv_tabular/` | guarded fusion discovery | branch, country, review-budget, schema, and compact predictions |
 | `nb12b_confirmatory/` | final fresh-seed confirmation | acceptance rules, stability, thresholds, review queue, manifest, and predictions |
+| `nb13_india_transfer/` | completed frozen-model India audit | 300-source panel, 299 predictions, ranking metrics, review budgets, bootstrap, acquisition QA, and caches |
 
 Large raw detections, per-country feature populations, image chips, sidecar metadata,
 population-scale predictions, logs, and duplicate copies of source code are excluded.
-Together those external run folders exceed one gigabyte and can be regenerated. The
-retained result evidence is about 7.5 MB.
+Keep original saved Kaggle outputs for chip reuse. The compact ZIP exports are not
+complete acquisition backups. See [file layout](../docs/FILE_LAYOUT.md) for provenance.
 
-Important status note: the India files record a historical evaluation with a superseded
-NB8 model. The final NB12b guarded ensemble has not been evaluated on India, but the
-project can no longer describe India as a pristine untouched holdout.
+`nb10_india_historical/` records the superseded NB8 population-scale evaluation.
+`nb13_india_transfer/` records the final NB12b model on an enriched India image panel.
+These populations differ and their PR-AUC values are not directly comparable. India is
+not a pristine project-level holdout. Current interpretation is in [RESULTS.md](../RESULTS.md).

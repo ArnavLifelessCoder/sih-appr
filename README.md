@@ -22,13 +22,33 @@ was -0.0006 to 0.0515, so the experiment supports the non-inferiority guard but 
 establish a conventionally significant positive gain. These panel metrics compare models;
 they are not population precision estimates.
 
-India requires careful wording. A historical India run was completed with the superseded
-NB8 model and produced F1 0.151 and PR-AUC 0.142 on 706,686 sources. The final NB12b
-guarded model has not been evaluated on India. Therefore India is not a pristine
-project-level holdout, although it remained excluded from NB12 and NB12b training,
-selection, calibration, and thresholding.
+NB13 has now evaluated the frozen NB12b model on an India imagery panel. Of 300
+fixed sources, 299 passed acquisition and QA, including all 72 EOG-positive sites.
+
+| India panel metric | Compact baseline | Guarded CV plus tabular |
+|---|---:|---:|
+| PR-AUC | 0.7788 | **0.8022** |
+| ROC-AUC | 0.8650 | **0.8814** |
+| Known sites found in top 30 | 27 | **30** |
+| Known sites found in top 60 | 45 | **47** |
+| Known sites found in top 90 | **54** | 52 |
+
+The India ranking guard passed. The PR-AUC gain was 0.0234, with a 95% block-bootstrap
+interval of -0.0136 to 0.0611. Both country experiments therefore retain uncertainty
+about a positive CV benefit. NB13 reports no F1 because the frozen pilot threshold
+is not deployment-calibrated. Both models use image summaries; guarded adds the
+CNN and morphology residual.
+
+A historical NB8 India run reported F1 0.151 and PR-AUC 0.142 on 706,686 sources.
+That full-population result is not directly comparable with this EOG-enriched panel.
+India remained excluded from NB12/NB12b fitting and selection, but is not a pristine
+project-level holdout. NB13 compared two frozen branches and selected one for India
+ranking under a rule written before the scores were available; a further independent
+evaluation is needed to assess that selected policy.
 
 See [RESULTS.md](RESULTS.md) for the complete progression and limitations.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for feature dimensions, model composition,
+data flow, and inference requirements, and [docs/README.md](docs/README.md) for navigation.
 
 ## Data audit
 
@@ -79,7 +99,8 @@ tabular evidence.
 | `docs/data/` | Imagery and external-data request specification |
 | `results/` | Curated CSV, JSON, compact parquet, and QA evidence from completed runs |
 | `artifacts/nb12b/` | Frozen final NB12b models, calibration, embeddings, and morphology inputs |
-| `output/pdf/` | Current plain-text project report |
+| `results/nb13_india_transfer/` | Completed India predictions, metrics, acquisition evidence, and feature caches |
+| `output/pdf/` | Dated report snapshot from before the India result; see its README |
 | `src/` | Local audit utilities |
 | `tests/` | Leakage, schema, evaluation, and artifact-contract tests |
 | `docs/archive/` | Superseded narrative documents retained only for history |
@@ -92,8 +113,16 @@ is sufficient to audit every reported number.
 
 Import the required notebook from `notebooks/kaggle/`, attach the saved inputs named in
 its matching `docs/runs/` file, and use Save and Run All. NB12b is the frozen foreign
-confirmation run. NB13 is the prepared India transfer evaluation and uses repeated,
+confirmation run. NB13 is the completed India transfer evaluation and uses repeated,
 bounded image-acquisition versions before scoring the unchanged NB12b ensemble.
+Its three batches are now complete; rerunning is not required to inspect the saved result.
+The NB13 feature input comes from NB10, not the foreign-only NB2 output.
+
+To verify the committed NB13 evidence locally with pandas, NumPy, scikit-learn and PyArrow installed:
+
+```bash
+python scripts/verify_nb13_evidence.py
+```
 
 ## Important data details
 
